@@ -50,7 +50,10 @@
                 <img src="just%20logo.png" alt="Logo" class="logo-img">
                 <img src="logo%20text.png" alt="Marwil Rubeus" class="logo-text-img">
             </a>
-            <div class="nav-links">
+            <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Meniu">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="nav-links">
                 <a href="marwil-rubeus.html#home" data-i18n="navHome">Acasă</a>
                 <a href="marwil-rubeus.html#about" data-i18n="navAbout">Despre Noi</a>
                 <a href="marwil-rubeus.html#services" data-i18n="navServices">Servicii</a>
@@ -155,6 +158,22 @@
     <script src="translations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Mobile Menu ---
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const navLinks = document.getElementById('nav-links');
+            if (mobileBtn && navLinks) {
+                mobileBtn.addEventListener('click', () => {
+                    navLinks.classList.toggle('open');
+                    mobileBtn.classList.toggle('open');
+                });
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navLinks.classList.remove('open');
+                        mobileBtn.classList.remove('open');
+                    });
+                });
+            }
+
             // --- Theme Logic ---
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;

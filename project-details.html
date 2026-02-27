@@ -13,7 +13,12 @@
         .section-title { color: var(--deep-blue); text-transform: uppercase; font-size: 1.2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--slate); padding-bottom: 0.5rem; }
         .info-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
         .label { font-weight: 700; color: var(--slate); }
-        .single-photo-card { width: 300px; height: 300px; object-fit: cover; border-radius: 12px; border: 1px solid var(--sky-blue); }
+        .single-photo-card { width: 100%; max-width: 300px; height: 300px; object-fit: cover; border-radius: 12px; border: 1px solid var(--sky-blue); }
+        @media (max-width: 576px) {
+            .section-box { padding: 1.2rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .single-photo-card { max-width: 100%; height: 220px; }
+        }
     </style>
 </head>
 <body>
@@ -23,7 +28,10 @@
                 <img src="just%20logo.png" alt="Logo" class="logo-img">
                 <img src="logo%20text.png" alt="Marwil Rubeus" class="logo-text-img">
             </a>
-            <div class="nav-links">
+            <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Meniu">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links" id="nav-links">
                 <a href="marwil-rubeus.html#home" data-i18n="navHome">Acasă</a>
                 <a href="marwil-rubeus.html#about" data-i18n="navAbout">Despre Noi</a>
                 <a href="marwil-rubeus.html#services" data-i18n="navServices">Servicii</a>
@@ -61,6 +69,22 @@
     <script src="translations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Mobile Menu ---
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const navLinks = document.getElementById('nav-links');
+            if (mobileBtn && navLinks) {
+                mobileBtn.addEventListener('click', () => {
+                    navLinks.classList.toggle('open');
+                    mobileBtn.classList.toggle('open');
+                });
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navLinks.classList.remove('open');
+                        mobileBtn.classList.remove('open');
+                    });
+                });
+            }
+
             const html = document.documentElement;
             const savedTheme = localStorage.getItem('theme') || 'light';
             html.setAttribute('data-theme', savedTheme);

@@ -20,9 +20,12 @@
         }
         .login-box {
             background: var(--bg-color); padding: 3rem; border-radius: 8px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: calc(100% - 2rem); max-width: 400px; text-align: center;
         }
         .login-box input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--slate); border-radius: 4px; }
+        @media (max-width: 768px) {
+            .login-box { padding: 2rem 1.5rem; }
+        }
         #admin-content { display: none; }
 
         /* Upload Styling */
@@ -87,7 +90,10 @@
                     <img src="just%20logo.png" alt="Logo" class="logo-img">
                     <img src="logo%20text.png" alt="Marwil Rubeus" class="logo-text-img">
                 </a>
-                <div class="nav-links">
+                <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Meniu">
+                    <span></span><span></span><span></span>
+                </button>
+                <div class="nav-links" id="nav-links">
                     <div class="nav-controls">
                         <button id="theme-toggle" class="toggle-btn">🌙</button>
                         <button id="logout-btn" class="toggle-btn">Ieșire</button>
@@ -205,6 +211,16 @@
     <script src="projects.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Mobile Menu ---
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const navLinks = document.getElementById('nav-links');
+            if (mobileBtn && navLinks) {
+                mobileBtn.addEventListener('click', () => {
+                    navLinks.classList.toggle('open');
+                    mobileBtn.classList.toggle('open');
+                });
+            }
+
             const loginOverlay = document.getElementById('login-overlay');
             const adminContent = document.getElementById('admin-content');
             const loginForm = document.getElementById('login-form');
