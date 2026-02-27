@@ -24,11 +24,11 @@
                 <img src="logo%20text.png" alt="Marwil Rubeus" class="logo-text-img">
             </a>
             <div class="nav-links">
-                <a href="marwil-rubeus.html#home">Acasă</a>
-                <a href="marwil-rubeus.html#about">Despre Noi</a>
-                <a href="marwil-rubeus.html#services">Servicii</a>
-                <a href="projects.html">Portofoliu</a>
-                <a href="marwil-rubeus.html#contact" class="cta-button">Cere Ofertă</a>
+                <a href="marwil-rubeus.html#home" data-i18n="navHome">Acasă</a>
+                <a href="marwil-rubeus.html#about" data-i18n="navAbout">Despre Noi</a>
+                <a href="marwil-rubeus.html#services" data-i18n="navServices">Servicii</a>
+                <a href="projects.html" data-i18n="navPortfolio">Portofoliu</a>
+                <a href="marwil-rubeus.html#contact" class="cta-button" data-i18n="navContact">Cere Ofertă</a>
                 <div class="nav-controls">
                     <button id="lang-toggle" class="toggle-btn">EN</button>
                     <button id="theme-toggle" class="toggle-btn">🌙</button>
@@ -42,26 +42,48 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo"><img src="logo.png" alt="Marwil Rubeus Logo"><p>Soluții sustenabile din 2013.</p></div>
+                <div class="footer-logo"><img src="logo.png" alt="Marwil Rubeus Logo"><p data-i18n="footerText">Soluții sustenabile din 2013.</p></div>
                 <div class="footer-links">
-                    <div class="footer-column"><h4>Companie</h4><ul><li><a href="marwil-rubeus.html#about">Despre Noi</a></li><li><a href="marwil-rubeus.html#services">Servicii</a></li><li><a href="projects.html">Portofoliu</a></li></ul></div>
-                    <div class="footer-column"><h4>Contact</h4><ul><li><a href="mailto:office@marwil.ro">office@marwil.ro</a></li><li>+40 757 955 487</li></ul></div>
+                    <div class="footer-column"><h4 data-i18n="footerNav">Companie</h4><ul><li><a href="marwil-rubeus.html#about" data-i18n="navAbout">Despre Noi</a></li><li><a href="marwil-rubeus.html#services" data-i18n="navServices">Servicii</a></li><li><a href="projects.html" data-i18n="navPortfolio">Portofoliu</a></li></ul></div>
+                    <div class="footer-column"><h4 data-i18n="footerContact">Contact</h4><ul><li><a href="mailto:office@marwil.ro">office@marwil.ro</a></li><li>+40 757 955 487</li></ul></div>
                 </div>
             </div>
             <div class="copyright"><p>&copy; 2026 Marwil Rubeus S.R.L. | <a href="admin.html" class="admin-link-secret">Admin Login</a></p></div>
         </div>
     </footer>
 
-    <script src="projects.js?v=21"></script>
+    <!-- Scripts -->
+    <script src="projects.js?v=25"></script>
+    <script src="translations.js?v=25"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const html = document.documentElement;
-            html.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
-            document.getElementById('theme-toggle').onclick = () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+            const themeToggle = document.getElementById('theme-toggle');
+            if(themeToggle) themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            if(themeToggle) themeToggle.onclick = () => {
                 const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
                 html.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
+                themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
             };
+
+            const langToggle = document.getElementById('lang-toggle');
+            let currentLang = localStorage.getItem('lang') || 'ro';
+            function updateLanguage() {
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (translations[currentLang] && translations[currentLang][key]) el.textContent = translations[currentLang][key];
+                });
+                if(langToggle) langToggle.textContent = currentLang === 'en' ? 'RO' : 'EN';
+            }
+            if(langToggle) langToggle.onclick = () => {
+                currentLang = currentLang === 'en' ? 'ro' : 'en';
+                localStorage.setItem('lang', currentLang);
+                updateLanguage();
+            };
+            updateLanguage();
 
             const container = document.getElementById('project-content');
             const params = new URLSearchParams(window.location.search);
@@ -72,7 +94,7 @@
             let photos = '';
             if (p.photos && p.photos.length > 0) {
                 photos = `<div class="section-box"><h3 class="section-title">Documentație Vizuală</h3>`;
-                if (p.photos.length === 1) photos += `<img src="${p.photos[0]}" class="single-photo-card">`;
+                if (p.photos.length === 1) photos += `<div style="display:flex; justify-content:center;"><img src="${p.photos[0]}" class="single-photo-card"></div>`;
                 else {
                     photos += `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem;">`;
                     p.photos.forEach(s => photos += `<img src="${s}" style="width:100%; height:250px; object-fit:cover; border-radius:8px;">`);

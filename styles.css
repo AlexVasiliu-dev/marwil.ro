@@ -256,15 +256,17 @@ body {
 
 /* Global Secondary CTA used outside Hero */
 .problem-section .secondary-cta,
-.admin-container .secondary-cta {
-    color: var(--deep-blue);
-    border-color: var(--deep-blue);
+.admin-container .secondary-cta,
+.contact-section .secondary-cta {
+    color: var(--deep-blue) !important;
+    border-color: var(--deep-blue) !important;
 }
 
 .problem-section .secondary-cta:hover,
-.admin-container .secondary-cta:hover {
-    background-color: var(--deep-blue);
-    color: #fff;
+.admin-container .secondary-cta:hover,
+.contact-section .secondary-cta:hover {
+    background-color: var(--deep-blue) !important;
+    color: #fff !important;
 }
 
 /* Section Header */
@@ -655,10 +657,23 @@ body {
 .edit-btn { background-color: var(--sky-blue); color: #fff; }
 .delete-btn { background-color: #f44336; color: #fff; }
 
-/* Contact Section */
 .contact-section {
     padding: var(--spacing-xl) 0;
     background-color: var(--card-bg);
+    text-align: center;
+}
+
+.contact-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.contact-info {
+    text-align: center;
+    width: 100%;
 }
 
 .contact-info h3 {
@@ -677,7 +692,9 @@ body {
 .contact-details {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: var(--spacing-md);
+    margin-bottom: 2rem;
 }
 
 .contact-item {
