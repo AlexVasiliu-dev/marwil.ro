@@ -1,22 +1,18 @@
-// =========================================================
-// FIREBASE CONFIGURATION
-// 1. Go to https://console.firebase.google.com/
-// 2. Create a new project
-// 3. Add a Web App and paste your config values below
-// 4. Enable Realtime Database (start in test mode)
-// 5. Enable Storage (start in test mode)
-// =========================================================
+// Firebase Configuration (CDN compat mode)
+// NOTE: databaseURL is required for Realtime Database.
+// Verify yours in Firebase Console > Realtime Database > Data tab (the URL shown there).
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAlhzT5nqJ9WSlT1n5A5vBuWT1_XKV1E98",
+    authDomain: "marwin-rubeus.firebaseapp.com",
+    databaseURL: "https://marwin-rubeus-default-rtdb.firebaseio.com",
+    projectId: "marwin-rubeus",
+    storageBucket: "marwin-rubeus.firebasestorage.app",
+    messagingSenderId: "127580569104",
+    appId: "1:127580569104:web:d1f25e97d0cf66c7c69495",
+    measurementId: "G-7BBTRXLJRL"
 };
 
-// Admin password — change this before going live!
+// Admin password
 const ADMIN_PASSWORD = 'Rubeus2025%';
 
 firebase.initializeApp(firebaseConfig);
