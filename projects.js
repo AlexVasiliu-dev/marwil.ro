@@ -32,7 +32,7 @@ const projectsData = [
 ];
 
 function getProjects() {
-    // FORCE RESET: Always return original clean data if no manual edits exist
+    // FORCE CLEANUP: If images are detected in default data logic, purge everything
     const localRaw = localStorage.getItem('marwil_projects');
     if (!localRaw) {
         localStorage.setItem('marwil_projects', JSON.stringify(projectsData));
@@ -41,8 +41,8 @@ function getProjects() {
     
     try {
         const parsed = JSON.parse(localRaw);
-        // If data looks duplicated or incorrect, purge and reset
-        if (parsed.length > 60 || parsed.length < 20) {
+        // If data looks like the old "messy" version with hardcoded images, reset it
+        if (parsed.some(p => p.image && p.image.includes('screens/'))) {
             localStorage.setItem('marwil_projects', JSON.stringify(projectsData));
             return projectsData;
         }
@@ -65,4 +65,13 @@ function deleteProject(id) {
     let projects = getProjects();
     projects = projects.filter(p => p.id !== id);
     localStorage.setItem('marwil_projects', JSON.stringify(projects));
+}
+
+// Password Management
+function getAdminPass() {
+    return localStorage.getItem('admin_pass') || 'Rubeus2025%';
+}
+
+function setAdminPass(newPass) {
+    localStorage.setItem('admin_pass', newPass);
 }

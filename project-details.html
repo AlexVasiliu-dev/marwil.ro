@@ -8,102 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-        .details-container {
-            margin-top: 120px;
-            padding-bottom: 50px;
-        }
-        .section-box {
-            background: var(--card-bg);
-            border-left: 5px solid var(--deep-blue);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 4px;
-        }
-        .section-title {
-            color: var(--deep-blue);
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--slate);
-            padding-bottom: 0.5rem;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 1rem;
-        }
+        .details-container { margin-top: 120px; padding-bottom: 50px; }
+        .section-box { background: var(--card-bg); border-left: 5px solid var(--deep-blue); padding: 2rem; margin-bottom: 2rem; border-radius: 4px; }
+        .section-title { color: var(--deep-blue); text-transform: uppercase; font-size: 1.2rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--slate); padding-bottom: 0.5rem; }
+        .info-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; }
         .label { font-weight: 700; color: var(--slate); }
-        
-        /* Gallery Styles */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        .gallery img { 
-            width: 100%; 
-            height: 250px; 
-            object-fit: cover; 
-            border-radius: 8px;
-            transition: transform 0.3s;
-        }
-        .gallery img:hover {
-            transform: scale(1.02);
-        }
-
-        /* Single Photo Square Card Style */
-        .single-photo-container {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: flex-start;
-        }
-        .single-photo-card {
-            width: 300px;
-            height: 300px;
-            object-fit: cover;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 1px solid var(--sky-blue);
-            transition: transform 0.3s;
-        }
-        .single-photo-card:hover {
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 768px) {
-            .info-grid { grid-template-columns: 1fr; }
-            .project-details-grid { grid-template-columns: 1fr; }
-            .single-photo-card { width: 100%; height: auto; aspect-ratio: 1/1; }
-        }
-        .project-details-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 3rem;
-            padding: 3rem 0;
-        }
-        .project-meta {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 8px;
-            border-top: 4px solid var(--sky-blue);
-        }
-        .meta-item {
-            margin-bottom: 1.5rem;
-        }
-        .meta-item h4 {
-            color: var(--deep-blue);
-            font-family: var(--font-serif);
-            margin-bottom: 0.25rem;
-        }
-        .meta-item p {
-            margin: 0;
-            font-size: 1.1rem;
-        }
+        .single-photo-card { width: 300px; height: 300px; object-fit: cover; border-radius: 12px; border: 1px solid var(--sky-blue); }
     </style>
 </head>
 <body>
-    <!-- Navigation (Full Fixed Header) -->
     <nav class="navbar">
         <div class="container">
             <a href="marwil-rubeus.html" class="logo">
@@ -117,122 +30,61 @@
                 <a href="projects.html">Portofoliu</a>
                 <a href="marwil-rubeus.html#contact" class="cta-button">Cere Ofertă</a>
                 <div class="nav-controls">
+                    <button id="lang-toggle" class="toggle-btn">EN</button>
                     <button id="theme-toggle" class="toggle-btn">🌙</button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="container details-container" id="project-content">
-        <!-- Loaded via JS -->
-    </main>
+    <main class="container details-container" id="project-content"></main>
 
     <footer class="footer">
         <div class="container">
-            <div class="copyright">
-                <p>&copy; 2026 Marwil Rubeus S.R.L. | <a href="admin.html" class="admin-link-secret">Admin Login</a></p>
+            <div class="footer-content">
+                <div class="footer-logo"><img src="logo.png" alt="Marwil Rubeus Logo"><p>Soluții sustenabile din 2013.</p></div>
+                <div class="footer-links">
+                    <div class="footer-column"><h4>Companie</h4><ul><li><a href="marwil-rubeus.html#about">Despre Noi</a></li><li><a href="marwil-rubeus.html#services">Servicii</a></li><li><a href="projects.html">Portofoliu</a></li></ul></div>
+                    <div class="footer-column"><h4>Contact</h4><ul><li><a href="mailto:office@marwil.ro">office@marwil.ro</a></li><li>+40 757 955 487</li></ul></div>
+                </div>
             </div>
+            <div class="copyright"><p>&copy; 2026 Marwil Rubeus S.R.L. | <a href="admin.html" class="admin-link-secret">Admin Login</a></p></div>
         </div>
     </footer>
 
-    <!-- GDPR Bubble -->
-    <div id="gdpr-bubble">
-        <div class="gdpr-content">
-            <h4>Acord de Confidențialitate</h4>
-            <p>Folosim cookie-uri pentru a vă îmbunătăți experiența pe site-ul nostru. Prin continuarea navigării, sunteți de acord cu utilizarea acestora conform politicii GDPR.</p>
-            <div class="gdpr-actions">
-                <button id="accept-gdpr" class="gdpr-btn">Accept</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="projects.js?v=16"></script>
+    <script src="projects.js?v=21"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- GDPR Logic ---
-            const gdprBubble = document.getElementById('gdpr-bubble');
-            const acceptBtn = document.getElementById('accept-gdpr');
-            if (!localStorage.getItem('gdpr_accepted')) {
-                setTimeout(() => { if(gdprBubble) gdprBubble.classList.add('show'); }, 2000);
-            }
-            if(acceptBtn) {
-                acceptBtn.addEventListener('click', () => {
-                    gdprBubble.classList.remove('show');
-                    localStorage.setItem('gdpr_accepted', 'true');
-                });
-            }
-
-            // Theme Sync
-            const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            html.setAttribute('data-theme', savedTheme);
-            if(themeToggle) themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
-            if(themeToggle) {
-                themeToggle.onclick = () => {
-                    const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-                    html.setAttribute('data-theme', newTheme);
-                    localStorage.setItem('theme', newTheme);
-                    themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
-                };
-            }
+            html.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
+            document.getElementById('theme-toggle').onclick = () => {
+                const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            };
 
-            // Data Loading
             const container = document.getElementById('project-content');
             const params = new URLSearchParams(window.location.search);
-            const projectId = parseInt(params.get('id'));
-            const p = getProjects().find(proj => proj.id === projectId);
+            const p = getProjects().find(proj => proj.id == params.get('id'));
 
-            if (!p) {
-                container.innerHTML = '<h2 style="text-align:center; padding: 100px;">Proiectul nu a fost găsit.</h2>';
-                return;
-            }
+            if (!p) { container.innerHTML = '<h2>Proiect negăsit.</h2>'; return; }
 
-            let photosHtml = '';
+            let photos = '';
             if (p.photos && p.photos.length > 0) {
-                if (p.photos.length === 1) {
-                    // Single photo square card
-                    photosHtml = `
-                        <div class="section-box">
-                            <h3 class="section-title">Documentație Vizuală</h3>
-                            <div class="single-photo-container">
-                                <img src="${p.photos[0]}" alt="Project Image" class="single-photo-card">
-                            </div>
-                        </div>`;
-                } else {
-                    // Multiple photos gallery
-                    photosHtml = `<div class="section-box"><h3 class="section-title">Documentație Vizuală</h3><div class="gallery">`;
-                    p.photos.forEach(src => photosHtml += `<img src="${src}" alt="Project Image">`);
-                    photosHtml += `</div></div>`;
+                photos = `<div class="section-box"><h3 class="section-title">Documentație Vizuală</h3>`;
+                if (p.photos.length === 1) photos += `<img src="${p.photos[0]}" class="single-photo-card">`;
+                else {
+                    photos += `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem;">`;
+                    p.photos.forEach(s => photos += `<img src="${s}" style="width:100%; height:250px; object-fit:cover; border-radius:8px;">`);
+                    photos += `</div>`;
                 }
+                photos += `</div>`;
             }
 
             container.innerHTML = `
-                <div class="section-box">
-                    <h3 class="section-title">Secțiunea 1: Obiectul Contractului</h3>
-                    <div class="info-grid">
-                        <div class="label">Denumire Proiect:</div><div>${p.name}</div>
-                        <div class="label">Tip Proiect:</div><div>${p.project_type}</div>
-                        <div class="label">Cod CPV:</div><div>${p.cpv || 'Nespecificat'}</div>
-                        <div class="label">Locație:</div><div>📍 ${p.city}</div>
-                        <div class="label">Descriere:</div><div>${p.scope || 'Servicii contractate prin achiziție publică conform normativelor în vigoare.'}</div>
-                    </div>
-                </div>
-
-                <div class="section-box">
-                    <h3 class="section-title">Secțiunea 2: Atribuirea Contractului</h3>
-                    <div class="info-grid">
-                        <div class="label">Autoritate Contractantă:</div><div>${p.authority}</div>
-                        <div class="label">Valoare Atribuită:</div><div style="font-size: 1.5rem; font-weight: 700; color: var(--deep-blue);">${Number(p.value).toLocaleString('ro-RO')} RON</div>
-                        <div class="label">Data Finalizării:</div><div>${new Date(p.date).toLocaleDateString('ro-RO')}</div>
-                        <div class="label">Stare Contract:</div><div><span class="project-status-badge status-finished">${p.status}</span></div>
-                    </div>
-                    <div style="margin-top: 2rem;">
-                        <a href="https://e-licitatie.ro/pub/notices/ca-notices/view-c/${p.id}" target="_blank" class="secondary-cta">Accesează SEAP oficial</a>
-                    </div>
-                </div>
-                ${photosHtml}
-            `;
+                <div class="section-box"><h3 class="section-title">Secțiunea 1: Obiect</h3><div class="info-grid"><div class="label">Nume:</div><div>${p.name}</div><div class="label">CPV:</div><div>${p.cpv || '-'}</div><div class="label">Locație:</div><div>${p.city}</div></div></div>
+                <div class="section-box"><h3 class="section-title">Secțiunea 2: Atribuire</h3><div class="info-grid"><div class="label">Autoritate:</div><div>${p.authority}</div><div class="label">Valoare:</div><div>${p.value.toLocaleString()} RON</div><div class="label">Stare:</div><div>${p.status}</div></div><div style="margin-top:2rem;"><a href="https://e-licitatie.ro/pub/notices/ca-notices/view-c/${p.id}" target="_blank" class="secondary-cta" style="color:var(--deep-blue); border-color:var(--deep-blue);">Accesează SEAP oficial</a></div></div>
+                ${photos}`;
         });
     </script>
 </body>

@@ -702,29 +702,25 @@ body {
     background-color: var(--deep-blue-dark);
     color: #fff;
     padding: var(--spacing-xl) 0 var(--spacing-md);
-    text-align: center; /* Center everything */
 }
 
 .footer-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-lg);
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: var(--spacing-xl);
     margin-bottom: var(--spacing-lg);
 }
 
 .footer-logo img {
-    height: 100px; 
+    height: 80px; 
     width: auto; 
     margin-bottom: 1rem;
     filter: invert(1) brightness(1.5);
 }
 
 .footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .footer-column h4 {
@@ -759,7 +755,6 @@ body {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     color: #aaa;
     font-size: 0.9rem;
-    width: 100%;
 }
 
 .admin-link-secret {
