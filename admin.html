@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Marwil Rubeus</title>
+    <link rel="icon" type="image/png" href="just%20logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .btn-add { background: var(--deep-blue); color: #fff; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s; }
+        .btn-add:hover { background: var(--sky-blue); }
+        #photo-manager { display: none; grid-column: span 2; }
+        
+        /* Login Overlay */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--deep-blue-dark);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            background: var(--bg-color);
+            padding: 3rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-box h2 { color: var(--deep-blue); margin-bottom: 2rem; }
+        .login-box input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--slate);
+            border-radius: 4px;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+        #admin-content { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Login System -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <img src="just%20logo.png" alt="Logo" style="height: 60px; margin-bottom: 1rem;">
+            <h2>Autentificare Admin</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Utilizator" required>
+                <input type="password" id="password" placeholder="Parolă" required>
+                <button type="submit" class="primary-cta" style="width: 100%; border: none;">Conectare</button>
+                <p id="login-error" style="color: red; margin-top: 1rem; display: none;">Date incorecte!</p>
+            </form>
+        </div>
+    </div>
+
+    <div id="admin-content">
+        <!-- Unified Header -->
+        <nav class="navbar">
+            <div class="container">
+                <a href="marwil-rubeus.html" class="logo">
+                    <img src="just%20logo.png" alt="Logo" class="logo-img">
+                    <img src="logo%20text.png" alt="Marwil Rubeus" class="logo-text-img">
+                </a>
+                <div class="nav-links">
+                    <div class="nav-controls">
+                        <button id="theme-toggle" class="toggle-btn">🌙</button>
+                        <button id="logout-btn" class="toggle-btn">Ieșire</button>
+                        <a href="marwil-rubeus.html" style="font-weight: 500;">Înapoi la site</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container admin-container" style="margin-top: 120px;">
+            <h3 id="form-title">Adaugă Proiect Nou</h3>
+
+            <form id="project-form" class="admin-form">
+                <input type="hidden" id="project-id">
+                <div class="form-group"><label>Titlu Proiect</label><input type="text" id="project-title" required></div>
+                <div class="form-group"><label>Categorie</label><input type="text" id="project-category" required></div>
+                <div class="form-group"><label>Locație</label><input type="text" id="project-location" required></div>
+                <div class="form-group"><label>Autoritate Contractantă</label><input type="text" id="project-contractor" required></div>
+                <div class="form-group"><label>Buget Proiect (RON)</label><input type="number" id="project-budget" required></div>
+                <div class="form-group"><label>Cod CPV</label><input type="text" id="project-cpv" placeholder="Ex: 45232150-8" required></div>
+                <div class="form-group"><label>Stare</label>
+                    <select id="project-status">
+                        <option value="Atribuita">Atribuită</option>
+                        <option value="Publicat">Publicat</option>
+                        <option value="Oferta acceptata">Ofertă acceptată</option>
+                        <option value="Oferta refuzata">Ofertă refuzată</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Tip Proiect</label>
+                    <select id="project-type">
+                        <option value="Lucrari">Lucrări</option>
+                        <option value="Servicii">Servicii</option>
+                        <option value="Furnizare">Furnizare</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Imagine Copertă (Cale locală, ex: screens/nume.png sau link URL)</label>
+                    <input type="text" id="project-image" placeholder="Ex: screens/Depoul cfr galati.png">
+                </div>
+                <div class="form-group" style="grid-column: span 2;"><label>Descriere / Obiect</label><textarea id="project-scope" rows="4"></textarea></div>
+                
+                <div id="photo-manager">
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Gestionare Galerie Foto (Introduceți căile imaginilor, una pe linie. Ex: screens/foto1.png)</label>
+                        <textarea id="project-photos" rows="5"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group" style="grid-column: span 2; display: flex; gap: 1rem;">
+                    <button type="submit" class="btn-add" id="submit-btn">Adaugă Proiect</button>
+                    <button type="button" class="action-btn" style="background: #999; color: #fff;" onclick="resetForm()">Anulează</button>
+                </div>
+            </form>
+
+            <table class="admin-table">
+                <thead><tr><th>Stare</th><th>Titlu</th><th>Categorie</th><th>Acțiuni</th></tr></thead>
+                <tbody id="admin-projects-list"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="projects.js?v=13"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- LOGIN LOGIC ---
+            const loginOverlay = document.getElementById('login-overlay');
+            const adminContent = document.getElementById('admin-content');
+            const loginForm = document.getElementById('login-form');
+            const loginError = document.getElementById('login-error');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                loginOverlay.style.display = 'none';
+                adminContent.style.display = 'block';
+            }
+
+            loginForm.onsubmit = (e) => {
+                e.preventDefault();
+                const user = document.getElementById('username').value;
+                const pass = document.getElementById('password').value;
+
+                if (user === 'Marius' && pass === 'Rubeus2025%') {
+                    sessionStorage.setItem('admin_logged_in', 'true');
+                    loginOverlay.style.display = 'none';
+                    adminContent.style.display = 'block';
+                    loadAdminProjects();
+                } else {
+                    loginError.style.display = 'block';
+                }
+            };
+
+            logoutBtn.onclick = () => {
+                sessionStorage.removeItem('admin_logged_in');
+                location.reload();
+            };
+
+            // --- Theme Logic ---
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+            if(themeToggle) themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+
+            if(themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    const currentTheme = html.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    html.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
+                });
+            }
+
+            // --- Projects Admin Logic ---
+            const form = document.getElementById('project-form');
+            const list = document.getElementById('admin-projects-list');
+            const photoManager = document.getElementById('photo-manager');
+            const formTitle = document.getElementById('form-title');
+
+            function loadAdminProjects() {
+                list.innerHTML = '';
+                getProjects().forEach(p => {
+                    list.innerHTML += `
+                        <tr>
+                            <td><span class="project-status-badge status-finished" style="position: static;">${p.status}</span></td>
+                            <td><strong>${p.name}</strong></td>
+                            <td>${p.project_type}</td>
+                            <td>
+                                <button class="action-btn edit-btn" onclick="editProject(${p.id})">Editează</button>
+                                <button class="action-btn delete-btn" onclick="handleDelete(${p.id})">Șterge</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const idInput = document.getElementById('project-id').value;
+                const photoUrls = document.getElementById('project-photos').value.split('\n').filter(url => url.trim() !== '');
+
+                const project = {
+                    id: idInput ? parseInt(idInput) : null,
+                    name: document.getElementById('project-title').value,
+                    project_type: document.getElementById('project-type').value,
+                    category: document.getElementById('project-category').value,
+                    city: document.getElementById('project-location').value,
+                    authority: document.getElementById('project-contractor').value,
+                    value: parseFloat(document.getElementById('project-budget').value),
+                    cpv: document.getElementById('project-cpv').value,
+                    date: new Date().toISOString(),
+                    status: document.getElementById('project-status').value,
+                    featured: photoUrls.length > 0,
+                    image: document.getElementById('project-image').value,
+                    scope: document.getElementById('project-scope').value,
+                    photos: photoUrls
+                };
+                saveProject(project);
+                resetForm();
+                loadAdminProjects();
+                alert('Proiect salvat!');
+            };
+
+            window.handleDelete = (id) => {
+                if(confirm('Ștergi acest proiect?')) {
+                    deleteProject(id);
+                    loadAdminProjects();
+                }
+            };
+
+            window.editProject = (id) => {
+                const p = getProjects().find(proj => proj.id === id);
+                if (p) {
+                    formTitle.textContent = `Editare: ${p.name}`;
+                    document.getElementById('project-id').value = p.id;
+                    document.getElementById('project-title').value = p.name;
+                    document.getElementById('project-category').value = p.category || p.project_type;
+                    document.getElementById('project-type').value = p.project_type;
+                    document.getElementById('project-location').value = p.city;
+                    document.getElementById('project-contractor').value = p.authority;
+                    document.getElementById('project-budget').value = p.value;
+                    document.getElementById('project-cpv').value = p.cpv || '';
+                    document.getElementById('project-status').value = p.status;
+                    document.getElementById('project-image').value = p.image || '';
+                    document.getElementById('project-scope').value = p.scope || '';
+                    document.getElementById('project-photos').value = p.photos ? p.photos.join('\n') : '';
+                    
+                    photoManager.style.display = 'block';
+                    document.getElementById('submit-btn').textContent = 'Actualizează Proiect';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
+            window.resetForm = () => {
+                form.reset();
+                formTitle.textContent = 'Adaugă Proiect Nou';
+                document.getElementById('project-id').value = '';
+                photoManager.style.display = 'none';
+                document.getElementById('submit-btn').textContent = 'Adaugă Proiect';
+            };
+
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                loadAdminProjects();
+            }
+        });
+    </script>
+</body>
+</html>

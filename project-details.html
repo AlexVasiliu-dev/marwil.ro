@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ro" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalii Proiect | Marwil Rubeus</title>
+    <link rel="icon" type="image/png" href="just%20logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .details-container {
+            margin-top: 120px;
+            padding-bottom: 50px;
+        }
+        .section-box {
+            background: var(--card-bg);
+            border-left: 5px solid var(--deep-blue);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+        .section-title {
+            color: var(--deep-blue);
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--slate);
+            padding-bottom: 0.5rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1rem;
+        }
+        .label { font-weight: 700; color: var(--slate); }
+        
+        /* Gallery Styles */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .gallery img { 
+            width: 100%; 
+            height: 250px; 
+            object-fit: cover; 
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+        .gallery img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Single Photo Square Card Style */
+        .single-photo-container {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-start;
+        }
+        .single-photo-card {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--sky-blue);
+            transition: transform 0.3s;
+        }
+        .single-photo-card:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .project-details-grid { grid-template-columns: 1fr; }
+            .single-photo-card { width: 100%; height: auto; aspect-ratio: 1/1; }
+        }
+        .project-details-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            padding: 3rem 0;
+        }
+        .project-meta {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border-top: 4px solid var(--sky-blue);
+        }
+        .meta-item {
+            margin-bottom: 1.5rem;
+        }
+        .meta-item h4 {
+            color: var(--deep-blue);
+            font-family: var(--font-serif);
+            margin-bottom: 0.25rem;
+        }
+        .meta-item p {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation (Full Fixed Header) -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="marwil-rubeus.html" class="logo">
+                <img src="just%20logo.png" alt="Logo" class="logo-img">
+                <img src="logo%20text.png" alt="Marwil Rubeus" class="logo-text-img">
+            </a>
+            <div class="nav-links">
+                <a href="marwil-rubeus.html#home">Acasă</a>
+                <a href="marwil-rubeus.html#about">Despre Noi</a>
+                <a href="marwil-rubeus.html#services">Servicii</a>
+                <a href="projects.html">Portofoliu</a>
+                <a href="marwil-rubeus.html#contact" class="cta-button">Cere Ofertă</a>
+                <div class="nav-controls">
+                    <button id="theme-toggle" class="toggle-btn">🌙</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container details-container" id="project-content">
+        <!-- Loaded via JS -->
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Marwil Rubeus S.R.L. | <a href="admin.html" class="admin-link-secret">Admin Login</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- GDPR Bubble -->
+    <div id="gdpr-bubble">
+        <div class="gdpr-content">
+            <h4>Acord de Confidențialitate</h4>
+            <p>Folosim cookie-uri pentru a vă îmbunătăți experiența pe site-ul nostru. Prin continuarea navigării, sunteți de acord cu utilizarea acestora conform politicii GDPR.</p>
+            <div class="gdpr-actions">
+                <button id="accept-gdpr" class="gdpr-btn">Accept</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="projects.js?v=16"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- GDPR Logic ---
+            const gdprBubble = document.getElementById('gdpr-bubble');
+            const acceptBtn = document.getElementById('accept-gdpr');
+            if (!localStorage.getItem('gdpr_accepted')) {
+                setTimeout(() => { if(gdprBubble) gdprBubble.classList.add('show'); }, 2000);
+            }
+            if(acceptBtn) {
+                acceptBtn.addEventListener('click', () => {
+                    gdprBubble.classList.remove('show');
+                    localStorage.setItem('gdpr_accepted', 'true');
+                });
+            }
+
+            // Theme Sync
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+            if(themeToggle) themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+            if(themeToggle) {
+                themeToggle.onclick = () => {
+                    const newTheme = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    html.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
+                };
+            }
+
+            // Data Loading
+            const container = document.getElementById('project-content');
+            const params = new URLSearchParams(window.location.search);
+            const projectId = parseInt(params.get('id'));
+            const p = getProjects().find(proj => proj.id === projectId);
+
+            if (!p) {
+                container.innerHTML = '<h2 style="text-align:center; padding: 100px;">Proiectul nu a fost găsit.</h2>';
+                return;
+            }
+
+            let photosHtml = '';
+            if (p.photos && p.photos.length > 0) {
+                if (p.photos.length === 1) {
+                    // Single photo square card
+                    photosHtml = `
+                        <div class="section-box">
+                            <h3 class="section-title">Documentație Vizuală</h3>
+                            <div class="single-photo-container">
+                                <img src="${p.photos[0]}" alt="Project Image" class="single-photo-card">
+                            </div>
+                        </div>`;
+                } else {
+                    // Multiple photos gallery
+                    photosHtml = `<div class="section-box"><h3 class="section-title">Documentație Vizuală</h3><div class="gallery">`;
+                    p.photos.forEach(src => photosHtml += `<img src="${src}" alt="Project Image">`);
+                    photosHtml += `</div></div>`;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="section-box">
+                    <h3 class="section-title">Secțiunea 1: Obiectul Contractului</h3>
+                    <div class="info-grid">
+                        <div class="label">Denumire Proiect:</div><div>${p.name}</div>
+                        <div class="label">Tip Proiect:</div><div>${p.project_type}</div>
+                        <div class="label">Cod CPV:</div><div>${p.cpv || 'Nespecificat'}</div>
+                        <div class="label">Locație:</div><div>📍 ${p.city}</div>
+                        <div class="label">Descriere:</div><div>${p.scope || 'Servicii contractate prin achiziție publică conform normativelor în vigoare.'}</div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3 class="section-title">Secțiunea 2: Atribuirea Contractului</h3>
+                    <div class="info-grid">
+                        <div class="label">Autoritate Contractantă:</div><div>${p.authority}</div>
+                        <div class="label">Valoare Atribuită:</div><div style="font-size: 1.5rem; font-weight: 700; color: var(--deep-blue);">${Number(p.value).toLocaleString('ro-RO')} RON</div>
+                        <div class="label">Data Finalizării:</div><div>${new Date(p.date).toLocaleDateString('ro-RO')}</div>
+                        <div class="label">Stare Contract:</div><div><span class="project-status-badge status-finished">${p.status}</span></div>
+                    </div>
+                    <div style="margin-top: 2rem;">
+                        <a href="https://e-licitatie.ro/pub/notices/ca-notices/view-c/${p.id}" target="_blank" class="secondary-cta">Accesează SEAP oficial</a>
+                    </div>
+                </div>
+                ${photosHtml}
+            `;
+        });
+    </script>
+</body>
+</html>

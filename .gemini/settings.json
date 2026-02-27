@@ -1,0 +1,11 @@
+{
+  "ui": {
+    "showStatusInTitle": true,
+    "hideTips": false,
+    "footer": {
+      "hideSandboxStatus": true,
+      "hideContextPercentage": false
+    },
+    "showMemoryUsage": true
+  }
+}
