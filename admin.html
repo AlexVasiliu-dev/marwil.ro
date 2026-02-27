@@ -27,12 +27,43 @@
 
         /* Upload Styling */
         .upload-wrapper { display: flex; gap: 10px; align-items: center; }
-        .upload-btn { 
-            background: var(--sky-blue); color: #fff; padding: 8px 15px; border-radius: 4px; 
+        .upload-btn {
+            background: var(--sky-blue); color: #fff; padding: 8px 15px; border-radius: 4px;
             cursor: pointer; font-size: 0.8rem; font-weight: 700; border: none;
         }
         .file-status { font-size: 0.75rem; color: var(--slate); }
         .preview-img { height: 50px; border-radius: 4px; border: 1px solid var(--slate); display: none; }
+
+        /* Banner Manager */
+        .banner-manager-section {
+            border: 1px solid var(--slate); border-radius: 8px;
+            padding: 1.5rem; margin-top: 2.5rem;
+        }
+        .banner-manager-section h3 { margin-bottom: 0.4rem; }
+        .banner-manager-section > p { font-size: 0.82rem; color: var(--slate); margin-bottom: 1.2rem; }
+        .banner-slots-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+        .banner-slot {
+            width: 170px; min-height: 90px;
+            border: 2px dashed var(--slate); border-radius: 6px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 8px; padding: 10px; text-align: center;
+        }
+        .banner-slot .slot-label { font-size: 0.7rem; color: var(--slate); }
+        .banner-slot.filled {
+            border: 2px solid var(--sky-blue); flex-direction: row;
+            justify-content: space-between; align-items: center; padding: 10px 14px;
+        }
+        .banner-filename {
+            font-size: 0.78rem; font-weight: 500;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 115px; text-align: left;
+        }
+        .banner-remove-btn {
+            background: none; border: none; color: #e53e3e;
+            font-size: 1.1rem; cursor: pointer; font-weight: 700; flex-shrink: 0;
+            padding: 0 4px; border-radius: 3px; line-height: 1;
+        }
+        .banner-remove-btn:hover { background: #fed7d7; }
     </style>
 </head>
 <body>
@@ -101,7 +132,6 @@
                         <button type="button" class="upload-btn" onclick="document.getElementById('upload-cover').click()">Încarcă Foto Copertă</button>
                         <span id="cover-status" class="file-status">Nicio imagine selectată</span>
                         <img id="cover-preview" class="preview-img">
-                        <input type="hidden" id="project-image-base64">
                     </div>
                 </div>
 
@@ -128,6 +158,13 @@
                 <thead><tr><th>Stare</th><th>Titlu</th><th>Categorie</th><th>ID / CPV</th><th>Acțiuni</th></tr></thead>
                 <tbody id="admin-projects-list"></tbody>
             </table>
+
+            <!-- Banner Image Manager -->
+            <div class="banner-manager-section">
+                <h3>Imagini Banner (Pagina Principală)</h3>
+                <p>Gestionați imaginile afișate în slideshow-ul de pe pagina principală. Puteți adăuga până la 5 imagini.</p>
+                <div id="banner-slots" class="banner-slots-grid"></div>
+            </div>
         </div>
 
         <footer class="footer">
@@ -161,7 +198,11 @@
         </footer>
     </div>
 
-    <script src="projects.js?v=23"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="projects.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const loginOverlay = document.getElementById('login-overlay');
@@ -169,8 +210,13 @@
             const loginForm = document.getElementById('login-form');
             const loginError = document.getElementById('login-error');
             const logoutBtn = document.getElementById('logout-btn');
+            const form = document.getElementById('project-form');
+            const list = document.getElementById('admin-projects-list');
 
-            let currentGallery = [];
+            let currentCoverFile = null;
+            let currentCoverUrl = '';
+            let currentGalleryFiles = [];
+            let currentGalleryUrls = [];
 
             // --- LOGIN ---
             if (sessionStorage.getItem('admin_logged_in') === 'true') {
@@ -180,7 +226,6 @@
                 e.preventDefault();
                 const user = document.getElementById('username').value;
                 const pass = document.getElementById('password').value;
-
                 if (user === 'Marius' && pass === getAdminPass()) {
                     sessionStorage.setItem('admin_logged_in', 'true'); location.reload();
                 } else { loginError.style.display = 'block'; }
@@ -188,74 +233,85 @@
             logoutBtn.onclick = () => { sessionStorage.removeItem('admin_logged_in'); location.reload(); };
 
             // --- UPLOAD HANDLERS ---
-            function toBase64(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = error => reject(error);
-                });
-            }
-
-            document.getElementById('upload-cover').onchange = async (e) => {
+            document.getElementById('upload-cover').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
-                    const base64 = await toBase64(file);
-                    document.getElementById('project-image-base64').value = base64;
-                    document.getElementById('cover-preview').src = base64;
+                    currentCoverFile = file;
+                    document.getElementById('cover-preview').src = URL.createObjectURL(file);
                     document.getElementById('cover-preview').style.display = 'block';
                     document.getElementById('cover-status').textContent = file.name;
                 }
             };
 
-            document.getElementById('upload-gallery').onchange = async (e) => {
+            document.getElementById('upload-gallery').onchange = (e) => {
                 const files = Array.from(e.target.files);
                 const previews = document.getElementById('gallery-previews');
-                for (const file of files) {
-                    const base64 = await toBase64(file);
-                    currentGallery.push(base64);
+                files.forEach(file => {
+                    currentGalleryFiles.push(file);
                     const img = document.createElement('img');
-                    img.src = base64;
+                    img.src = URL.createObjectURL(file);
                     img.className = 'preview-img';
                     img.style.display = 'block';
                     previews.appendChild(img);
-                }
-                document.getElementById('gallery-status').textContent = `${currentGallery.length} imagini în galerie`;
+                });
+                const total = currentGalleryUrls.length + currentGalleryFiles.length;
+                document.getElementById('gallery-status').textContent = `${total} imagini în galerie`;
             };
 
             // --- PROJECTS LOGIC ---
-            const form = document.getElementById('project-form');
-            const list = document.getElementById('admin-projects-list');
-
-            function loadAdminProjects() {
+            async function loadAdminProjects() {
+                list.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:1rem;">Se încarcă...</td></tr>';
+                const projects = await getProjects();
                 list.innerHTML = '';
-                getProjects().forEach(p => {
+                projects.forEach(p => {
                     list.innerHTML += `<tr><td><span class="project-status-badge status-finished" style="position:static;">${p.status}</span></td><td><strong>${p.name}</strong></td><td>${p.project_type}</td><td>${p.cpv || p.id}</td><td><button class="action-btn edit-btn" onclick="editProject(${p.id})">Editează</button><button class="action-btn delete-btn" onclick="handleDelete(${p.id})">Șterge</button></td></tr>`;
                 });
             }
 
-            form.onsubmit = (e) => {
+            form.onsubmit = async (e) => {
                 e.preventDefault();
-                const idInput = document.getElementById('project-id').value;
-                const project = {
-                    id: idInput ? parseInt(idInput) : Date.now(),
-                    name: document.getElementById('project-title').value,
-                    project_type: document.getElementById('project-type').value,
-                    city: document.getElementById('project-location').value,
-                    authority: document.getElementById('project-contractor').value,
-                    value: parseFloat(document.getElementById('project-budget').value),
-                    cpv: document.getElementById('project-cpv').value,
-                    status: document.getElementById('project-status').value,
-                    image: document.getElementById('project-image-base64').value,
-                    photos: currentGallery,
-                    scope: document.getElementById('project-scope').value,
-                    date: new Date().toISOString()
-                };
-                saveProject(project); resetForm(); loadAdminProjects(); alert('Proiect salvat!');
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Se încarcă...';
+                try {
+                    let coverUrl = currentCoverUrl;
+                    if (currentCoverFile) {
+                        coverUrl = await uploadImage(currentCoverFile, 'covers');
+                    }
+                    const newPhotoUrls = await Promise.all(currentGalleryFiles.map(f => uploadImage(f, 'gallery')));
+                    const allPhotoUrls = [...currentGalleryUrls, ...newPhotoUrls];
+
+                    const idVal = document.getElementById('project-id').value;
+                    const project = {
+                        id: idVal ? parseInt(idVal) : Date.now(),
+                        name: document.getElementById('project-title').value,
+                        project_type: document.getElementById('project-type').value,
+                        city: document.getElementById('project-location').value,
+                        authority: document.getElementById('project-contractor').value,
+                        value: parseFloat(document.getElementById('project-budget').value),
+                        cpv: document.getElementById('project-cpv').value,
+                        status: document.getElementById('project-status').value,
+                        image: coverUrl,
+                        photos: allPhotoUrls,
+                        scope: document.getElementById('project-scope').value,
+                        date: new Date().toISOString()
+                    };
+                    await saveProject(project);
+                    resetForm();
+                    await loadAdminProjects();
+                    alert('Proiect salvat!');
+                } catch (err) {
+                    alert('Eroare: ' + err.message);
+                    console.error(err);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Salvează Proiect';
+                }
             };
 
-            window.editProject = (id) => {
-                const p = getProjects().find(proj => proj.id == id);
+            window.editProject = async (id) => {
+                const projects = await getProjects();
+                const p = projects.find(proj => proj.id == id);
                 if (p) {
                     document.getElementById('form-title').textContent = `Editare: ${p.name}`;
                     document.getElementById('project-id').value = p.id;
@@ -267,37 +323,98 @@
                     document.getElementById('project-status').value = p.status;
                     document.getElementById('project-type').value = p.project_type;
                     document.getElementById('project-scope').value = p.scope || '';
-                    
-                    document.getElementById('project-image-base64').value = p.image || '';
-                    if(p.image) {
+
+                    currentCoverFile = null;
+                    currentCoverUrl = p.image || '';
+                    if (p.image) {
                         document.getElementById('cover-preview').src = p.image;
                         document.getElementById('cover-preview').style.display = 'block';
+                        document.getElementById('cover-status').textContent = 'Imagine existentă';
                     }
-                    
-                    currentGallery = p.photos || [];
+
+                    currentGalleryFiles = [];
+                    currentGalleryUrls = p.photos || [];
                     const previews = document.getElementById('gallery-previews');
                     previews.innerHTML = '';
-                    currentGallery.forEach(src => {
-                        const img = document.createElement('img'); img.src = src; img.className = 'preview-img'; img.style.display = 'block'; previews.appendChild(img);
+                    currentGalleryUrls.forEach(src => {
+                        const img = document.createElement('img');
+                        img.src = src; img.className = 'preview-img'; img.style.display = 'block';
+                        previews.appendChild(img);
                     });
-                    document.getElementById('gallery-status').textContent = `${currentGallery.length} imagini în galerie`;
+                    document.getElementById('gallery-status').textContent = `${currentGalleryUrls.length} imagini în galerie`;
                     document.getElementById('submit-btn').textContent = 'Actualizează Proiect';
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             };
 
-            window.handleDelete = (id) => { if(confirm('Ștergi?')) { deleteProject(id); loadAdminProjects(); } };
-            window.resetForm = () => { 
-                form.reset(); 
+            window.handleDelete = async (id) => {
+                if (confirm('Ștergi?')) {
+                    await deleteProject(id);
+                    await loadAdminProjects();
+                }
+            };
+
+            window.resetForm = () => {
+                form.reset();
                 document.getElementById('form-title').textContent = 'Adaugă Proiect Nou';
                 document.getElementById('project-id').value = '';
                 document.getElementById('cover-preview').style.display = 'none';
+                document.getElementById('cover-status').textContent = 'Nicio imagine selectată';
                 document.getElementById('gallery-previews').innerHTML = '';
-                currentGallery = [];
-                document.getElementById('submit-btn').textContent = 'Adaugă Proiect';
+                document.getElementById('gallery-status').textContent = '0 imagini în galerie';
+                currentCoverFile = null; currentCoverUrl = '';
+                currentGalleryFiles = []; currentGalleryUrls = [];
+                document.getElementById('submit-btn').textContent = 'Salvează Proiect';
+                document.getElementById('submit-btn').disabled = false;
             };
 
-            if (sessionStorage.getItem('admin_logged_in') === 'true') loadAdminProjects();
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                loadAdminProjects();
+                renderBannerSlots();
+            }
+
+            // --- BANNER MANAGER ---
+            window.renderBannerSlots = async function() {
+                const container = document.getElementById('banner-slots');
+                if (!container) return;
+                const images = await getBannerImages();
+                container.innerHTML = '';
+                images.forEach((img, i) => {
+                    const slot = document.createElement('div');
+                    slot.className = 'banner-slot' + (img ? ' filled' : '');
+                    if (img) {
+                        slot.innerHTML = `<span class="banner-filename" title="${img.name}">${img.name}</span><button type="button" class="banner-remove-btn" onclick="removeBannerImage(${i})">&#x2715;</button>`;
+                    } else {
+                        slot.innerHTML = `<input type="file" id="banner-file-${i}" accept="image/*" style="display:none;" onchange="uploadBannerImage(${i}, this)"><button type="button" class="upload-btn" onclick="document.getElementById('banner-file-${i}').click()">Încarcă Foto</button><span class="slot-label">Slot ${i + 1}</span>`;
+                    }
+                    container.appendChild(slot);
+                });
+            };
+
+            window.uploadBannerImage = async function(index, input) {
+                const file = input.files[0];
+                if (!file) return;
+                const slot = input.parentElement;
+                const btn = slot.querySelector('.upload-btn');
+                if (btn) { btn.disabled = true; btn.textContent = 'Se încarcă...'; }
+                try {
+                    const url = await uploadImage(file, 'banner');
+                    const images = await getBannerImages();
+                    images[index] = { name: file.name, src: url };
+                    await saveBannerImages(images);
+                    await renderBannerSlots();
+                } catch (err) {
+                    alert('Eroare upload banner: ' + err.message);
+                    if (btn) { btn.disabled = false; btn.textContent = 'Încarcă Foto'; }
+                }
+            };
+
+            window.removeBannerImage = async function(index) {
+                const images = await getBannerImages();
+                images[index] = null;
+                await saveBannerImages(images);
+                await renderBannerSlots();
+            };
         });
     </script>
 </body>

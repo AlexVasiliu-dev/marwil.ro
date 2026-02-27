@@ -212,8 +212,12 @@
     </div>
 
     <!-- Scripts -->
-    <script src="projects.js?v=25"></script>
-    <script src="translations.js?v=25"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="projects.js"></script>
+    <script src="translations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const html = document.documentElement;
@@ -261,19 +265,28 @@
             };
 
             const hero = document.getElementById('home');
-            const images = ['screens/header%20candidate.png','screens/Sala%20sporturilor%20galati%201.png','screens/Depoul%20cfr%20galati.png'];
-            let idx = 0;
-            setInterval(() => { idx = (idx + 1) % images.length; hero.style.backgroundImage = `url('${images[idx]}')`; }, 5000);
+            const defaultImages = ['screens/header%20candidate.png','screens/Sala%20sporturilor%20galati%201.png','screens/Depoul%20cfr%20galati.png'];
+
+            getBannerImages().then(bannerData => {
+                const custom = bannerData.filter(Boolean).map(img => img.src);
+                const images = custom.length > 0 ? custom : defaultImages;
+                let idx = 0;
+                hero.style.backgroundImage = `url('${images[0]}')`;
+                if (images.length > 1) {
+                    setInterval(() => { idx = (idx + 1) % images.length; hero.style.backgroundImage = `url('${images[idx]}')`; }, 5000);
+                }
+            });
 
             const container = document.getElementById('projects-container');
-            const all = getProjects();
-            const featured = all.filter(p => p.image).slice(0, 3);
-            if(container) {
-                featured.forEach(project => {
-                    const card = `<a href="project-details.html?id=${project.id}" class="project-card"><div class="project-status status-finished">${project.status}</div><img src="${project.image}" alt="${project.name}" class="project-image"><div class="project-info"><div class="project-category">${project.project_type}</div><h3>${project.name}</h3><p>${project.city}</p></div></a>`;
-                    container.innerHTML += card;
-                });
-            }
+            getProjects().then(all => {
+                const featured = all.filter(p => p.image).slice(0, 3);
+                if (container) {
+                    featured.forEach(project => {
+                        const card = `<a href="project-details.html?id=${project.id}" class="project-card"><div class="project-status status-finished">${project.status}</div><img src="${project.image}" alt="${project.name}" class="project-image"><div class="project-info"><div class="project-category">${project.project_type}</div><h3>${project.name}</h3><p>${project.city}</p></div></a>`;
+                        container.innerHTML += card;
+                    });
+                }
+            });
         });
     </script>
 </body>

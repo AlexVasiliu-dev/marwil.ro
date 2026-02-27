@@ -147,8 +147,12 @@
     </div>
 
     <!-- Scripts -->
-    <script src="projects.js?v=25"></script>
-    <script src="translations.js?v=25"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="projects.js"></script>
+    <script src="translations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- Theme Logic ---
@@ -204,7 +208,6 @@
             }
 
             // --- Projects Logic ---
-            const allProjects = getProjects();
             const fullListContainer = document.getElementById('full-project-list');
             const featuredContainer = document.getElementById('featured-projects-container');
             const searchInput = document.getElementById('search-input');
@@ -216,14 +219,13 @@
             };
 
             function renderFullList(projects) {
-                const sorted = projects.sort((a, b) => {
+                const sorted = [...projects].sort((a, b) => {
                     const aHigh = a.value >= 10000;
                     const bHigh = b.value >= 10000;
                     if (aHigh && !bHigh) return -1;
                     if (!aHigh && bHigh) return 1;
                     return b.value - a.value;
                 });
-
                 fullListContainer.innerHTML = '';
                 sorted.forEach(p => {
                     const statusClass = statusColorMap[p.status] || 'status-future';
@@ -242,23 +244,22 @@
                     fullListContainer.appendChild(projectRow);
                 });
             }
-            
-            renderFullList(allProjects);
 
-            if(searchInput) {
-                searchInput.addEventListener('input', () => {
-                    const term = searchInput.value.toLowerCase();
-                    const filtered = allProjects.filter(p => 
-                        p.name.toLowerCase().includes(term) || p.authority.toLowerCase().includes(term) || p.city.toLowerCase().includes(term)
-                    );
-                    renderFullList(filtered);
-                });
-            }
+            getProjects().then(allProjects => {
+                renderFullList(allProjects);
 
-            // Featured Logic: ONLY projects with images
-            const withImages = allProjects.filter(p => p.image);
-            if (featuredContainer) {
-                if (withImages.length > 0) {
+                if (searchInput) {
+                    searchInput.addEventListener('input', () => {
+                        const term = searchInput.value.toLowerCase();
+                        const filtered = allProjects.filter(p =>
+                            p.name.toLowerCase().includes(term) || p.authority.toLowerCase().includes(term) || p.city.toLowerCase().includes(term)
+                        );
+                        renderFullList(filtered);
+                    });
+                }
+
+                const withImages = allProjects.filter(p => p.image);
+                if (featuredContainer && withImages.length > 0) {
                     withImages.forEach(p => {
                         featuredContainer.innerHTML += `
                             <a href="project-details.html?id=${p.id}" class="project-card">
@@ -273,7 +274,7 @@
                         `;
                     });
                 }
-            }
+            });
         });
     </script>
 </body>

@@ -53,8 +53,12 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="projects.js?v=25"></script>
-    <script src="translations.js?v=25"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="projects.js"></script>
+    <script src="translations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const html = document.documentElement;
@@ -87,26 +91,29 @@
 
             const container = document.getElementById('project-content');
             const params = new URLSearchParams(window.location.search);
-            const p = getProjects().find(proj => proj.id == params.get('id'));
+            container.innerHTML = '<p style="text-align:center; padding:3rem;">Se încarcă...</p>';
 
-            if (!p) { container.innerHTML = '<h2>Proiect negăsit.</h2>'; return; }
+            getProjects().then(projects => {
+                const p = projects.find(proj => proj.id == params.get('id'));
+                if (!p) { container.innerHTML = '<h2>Proiect negăsit.</h2>'; return; }
 
-            let photos = '';
-            if (p.photos && p.photos.length > 0) {
-                photos = `<div class="section-box"><h3 class="section-title">Documentație Vizuală</h3>`;
-                if (p.photos.length === 1) photos += `<div style="display:flex; justify-content:center;"><img src="${p.photos[0]}" class="single-photo-card"></div>`;
-                else {
-                    photos += `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem;">`;
-                    p.photos.forEach(s => photos += `<img src="${s}" style="width:100%; height:250px; object-fit:cover; border-radius:8px;">`);
+                let photos = '';
+                if (p.photos && p.photos.length > 0) {
+                    photos = `<div class="section-box"><h3 class="section-title">Documentație Vizuală</h3>`;
+                    if (p.photos.length === 1) photos += `<div style="display:flex; justify-content:center;"><img src="${p.photos[0]}" class="single-photo-card"></div>`;
+                    else {
+                        photos += `<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:1rem;">`;
+                        p.photos.forEach(s => photos += `<img src="${s}" style="width:100%; height:250px; object-fit:cover; border-radius:8px;">`);
+                        photos += `</div>`;
+                    }
                     photos += `</div>`;
                 }
-                photos += `</div>`;
-            }
 
-            container.innerHTML = `
-                <div class="section-box"><h3 class="section-title">Secțiunea 1: Obiect</h3><div class="info-grid"><div class="label">Nume:</div><div>${p.name}</div><div class="label">CPV:</div><div>${p.cpv || '-'}</div><div class="label">Locație:</div><div>${p.city}</div></div></div>
-                <div class="section-box"><h3 class="section-title">Secțiunea 2: Atribuire</h3><div class="info-grid"><div class="label">Autoritate:</div><div>${p.authority}</div><div class="label">Valoare:</div><div>${p.value.toLocaleString()} RON</div><div class="label">Stare:</div><div>${p.status}</div></div><div style="margin-top:2rem;"><a href="https://e-licitatie.ro/pub/notices/ca-notices/view-c/${p.id}" target="_blank" class="secondary-cta" style="color:var(--deep-blue); border-color:var(--deep-blue);">Accesează SEAP oficial</a></div></div>
-                ${photos}`;
+                container.innerHTML = `
+                    <div class="section-box"><h3 class="section-title">Secțiunea 1: Obiect</h3><div class="info-grid"><div class="label">Nume:</div><div>${p.name}</div><div class="label">CPV:</div><div>${p.cpv || '-'}</div><div class="label">Locație:</div><div>${p.city}</div></div></div>
+                    <div class="section-box"><h3 class="section-title">Secțiunea 2: Atribuire</h3><div class="info-grid"><div class="label">Autoritate:</div><div>${p.authority}</div><div class="label">Valoare:</div><div>${p.value.toLocaleString()} RON</div><div class="label">Stare:</div><div>${p.status}</div></div><div style="margin-top:2rem;"><a href="https://e-licitatie.ro/pub/notices/ca-notices/view-c/${p.id}" target="_blank" class="secondary-cta" style="color:var(--deep-blue); border-color:var(--deep-blue);">Accesează SEAP oficial</a></div></div>
+                    ${photos}`;
+            });
         });
     </script>
 </body>

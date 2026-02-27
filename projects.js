@@ -7,7 +7,7 @@ const projectsData = [
   { "id": 120365989, "type": "achizitii-directe", "code": "DA38720335", "date": "2025-08-20T11:18:39.000Z", "status": "Oferta acceptata", "project_type": "Lucrari", "value": 34118, "cpv": "45314320-0", "name": "Cablare structurată Spital Tecuci", "authority": "Spitalul Municipal Tecuci", "city": "Tecuci" },
   { "id": 101602318, "type": "achizitii-offline", "code": "DAN2527283", "date": "2025-08-11T12:55:36.000Z", "status": "Publicat", "project_type": "Servicii", "value": 30000, "cpv": "50324100-3", "name": "Mentenanță BMS str. Traian", "authority": "Politia Locala Galati", "city": "Galati" },
   { "id": 101342389, "type": "achizitii-offline", "code": "DAN2276429", "date": "2024-09-30T09:52:16.000Z", "status": "Publicat", "project_type": "Lucrari", "value": 205675.5, "cpv": "45330000-9", "name": "Reparatii retea apa-canal Depoul Galati", "authority": "SNTFC CFR CALATORI S.A.", "city": "Bucuresti" },
-  { "id": 100500360, "type": "licitatii-publice", "code": "SCNA1108560", "date": "2024-10-10T07:56:30.000Z", "status": "Atribuita", "project_type": "Lucrari", "value": 3700505, "cpv": "45232150-8", "name": "Extindere sistem apă și canalizare Valea Mărului", "authority": "COMUNA VALEA MARULUI", "city": "Valea Marului" },
+  { "id": 100500360, "type": "licitatii-publice", "code": "SCNA1108560", "date": "2024-10-10T07:56:54.000Z", "status": "Atribuita", "project_type": "Lucrari", "value": 3700505, "cpv": "45232150-8", "name": "Extindere sistem apă și canalizare Valea Mărului", "authority": "COMUNA VALEA MARULUI", "city": "Valea Marului" },
   { "id": 100495437, "type": "licitatii-publice", "code": "SCNA1110797", "date": "2024-09-19T05:41:09.000Z", "status": "Atribuita", "project_type": "Lucrari", "value": 371272, "cpv": "45232150-8", "name": "Reabilitare rețea apă Micro 20", "authority": "APA CANAL S.A.", "city": "Galati" },
   { "id": 117670758, "type": "achizitii-directe", "code": "DA36207312", "date": "2024-07-29T06:40:52.000Z", "status": "Oferta acceptata", "project_type": "Servicii", "value": 561273, "cpv": "45453000-7", "name": "Reparații generale și renovare", "authority": "DAS GALAȚI", "city": "Galati" },
   { "id": 117312584, "type": "achizitii-directe", "code": "DA35873023", "date": "2024-06-04T08:00:39.000Z", "status": "Oferta acceptata", "project_type": "Lucrari", "value": 289994, "cpv": "45231112-3", "name": "Extindere conductă apă Nărtești", "authority": "APA CANAL S.A.", "city": "Galati" },
@@ -31,47 +31,60 @@ const projectsData = [
   { "id": 113110107, "type": "achizitii-directe", "code": "DA31969322", "date": "2022-11-23T07:08:13.000Z", "status": "Oferta acceptata", "project_type": "Furnizare", "value": 21250, "cpv": "35111300-8", "name": "Bila Extinctoare Spital Urgență", "authority": "Spitalul Clinic Sf. Ioan", "city": "Galati" }
 ];
 
-function getProjects() {
-    // FORCE CLEANUP: If images are detected in default data logic, purge everything
-    const localRaw = localStorage.getItem('marwil_projects');
-    if (!localRaw) {
-        localStorage.setItem('marwil_projects', JSON.stringify(projectsData));
-        return projectsData;
-    }
-    
+// --- Firebase Data Functions ---
+
+async function getProjects() {
     try {
-        const parsed = JSON.parse(localRaw);
-        // If data looks like the old "messy" version with hardcoded images, reset it
-        if (parsed.some(p => p.image && p.image.includes('screens/'))) {
-            localStorage.setItem('marwil_projects', JSON.stringify(projectsData));
-            return projectsData;
+        const snap = await db.ref('projects').once('value');
+        if (!snap.exists()) {
+            // First run: seed the database with initial data
+            const batch = {};
+            projectsData.forEach(p => { batch[p.id] = p; });
+            await db.ref('projects').set(batch);
+            return [...projectsData];
         }
-        return parsed;
-    } catch (e) {
-        localStorage.setItem('marwil_projects', JSON.stringify(projectsData));
-        return projectsData;
+        const arr = [];
+        snap.forEach(child => arr.push(child.val()));
+        return arr.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } catch (err) {
+        console.warn('Firebase unavailable, using local data:', err);
+        return [...projectsData];
     }
 }
 
-function saveProject(project) {
-    const projects = getProjects();
-    const index = projects.findIndex(p => p.id === project.id);
-    if (index > -1) { projects[index] = project; } 
-    else { project.id = Date.now(); projects.unshift(project); }
-    localStorage.setItem('marwil_projects', JSON.stringify(projects));
+async function saveProject(project) {
+    await db.ref('projects/' + project.id).set(project);
 }
 
-function deleteProject(id) {
-    let projects = getProjects();
-    projects = projects.filter(p => p.id !== id);
-    localStorage.setItem('marwil_projects', JSON.stringify(projects));
+async function deleteProject(id) {
+    await db.ref('projects/' + id).remove();
 }
 
-// Password Management
+async function uploadImage(file, folder) {
+    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const ref = storage.ref(folder + '/' + Date.now() + '_' + safe);
+    await ref.put(file);
+    return await ref.getDownloadURL();
+}
+
+async function getBannerImages() {
+    try {
+        const snap = await db.ref('banner_images').once('value');
+        const val = snap.val() || {};
+        const arr = [];
+        for (let i = 0; i < 5; i++) arr.push(val[i] || null);
+        return arr;
+    } catch (err) {
+        return new Array(5).fill(null);
+    }
+}
+
+async function saveBannerImages(images) {
+    const obj = {};
+    images.forEach((img, i) => { obj[i] = img || null; });
+    await db.ref('banner_images').set(obj);
+}
+
 function getAdminPass() {
-    return localStorage.getItem('admin_pass') || 'Rubeus2025%';
-}
-
-function setAdminPass(newPass) {
-    localStorage.setItem('admin_pass', newPass);
+    return ADMIN_PASSWORD;
 }
