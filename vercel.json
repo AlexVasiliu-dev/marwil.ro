@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/", "destination": "/marwil-rubeus.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
