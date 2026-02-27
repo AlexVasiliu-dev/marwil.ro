@@ -504,7 +504,7 @@ body {
 
 .project-list-header {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr 1fr;
+    grid-template-columns: 2fr 1.5fr 1fr 0.8fr 1fr;
     gap: 1rem;
     padding: 1rem;
     border-bottom: 2px solid var(--deep-blue);
@@ -523,7 +523,7 @@ body {
 
 .project-list-item {
     display: grid;
-    grid-template-columns: 2fr 1.5fr 1fr 1fr;
+    grid-template-columns: 2fr 1.5fr 1fr 0.8fr 1fr;
     gap: 1rem;
     padding: 1rem;
     border-bottom: 1px solid var(--slate);
