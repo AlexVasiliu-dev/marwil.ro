@@ -589,7 +589,8 @@ body {
     justify-content: center;
 }
 
-#featured-projects-container {
+#featured-projects-container,
+#projects-container {
     transition: opacity 0.4s ease;
 }
 

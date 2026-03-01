@@ -164,6 +164,8 @@
     <script src="translations.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            function safeGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+            function safeSet(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
             // --- Mobile Menu ---
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const navLinks = document.getElementById('nav-links');
@@ -183,7 +185,7 @@
             // --- Theme Logic ---
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
-            const savedTheme = localStorage.getItem('theme') || 'light';
+            const savedTheme = safeGet('theme') || 'light';
             html.setAttribute('data-theme', savedTheme);
             if(themeToggle) themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
             if(themeToggle) {
@@ -191,14 +193,14 @@
                     const currentTheme = html.getAttribute('data-theme');
                     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
                     html.setAttribute('data-theme', newTheme);
-                    localStorage.setItem('theme', newTheme);
+                    safeSet('theme', newTheme);
                     themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
                 });
             }
 
             // --- Language Logic ---
             const langToggle = document.getElementById('lang-toggle');
-            let currentLang = localStorage.getItem('lang') || 'ro';
+            let currentLang = safeGet('lang') || 'ro';
             
             let contractsChart = null;
 
@@ -222,7 +224,7 @@
             if(langToggle) {
                 langToggle.addEventListener('click', () => {
                     currentLang = currentLang === 'en' ? 'ro' : 'en';
-                    localStorage.setItem('lang', currentLang);
+                    safeSet('lang', currentLang);
                     updateLanguage();
                 });
             }
@@ -231,13 +233,13 @@
             // GDPR Bubble Logic
             const gdprBubble = document.getElementById('gdpr-bubble');
             const acceptBtn = document.getElementById('accept-gdpr');
-            if (!localStorage.getItem('gdpr_accepted')) {
+            if (!safeGet('gdpr_accepted')) {
                 setTimeout(() => { if(gdprBubble) gdprBubble.classList.add('show'); }, 2000);
             }
             if(acceptBtn) {
                 acceptBtn.addEventListener('click', () => {
                     gdprBubble.classList.remove('show');
-                    localStorage.setItem('gdpr_accepted', 'true');
+                    safeSet('gdpr_accepted', 'true');
                 });
             }
 
