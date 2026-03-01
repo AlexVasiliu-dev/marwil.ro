@@ -200,6 +200,8 @@
             const langToggle = document.getElementById('lang-toggle');
             let currentLang = localStorage.getItem('lang') || 'ro';
             
+            let contractsChart = null;
+
             function updateLanguage() {
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
@@ -209,6 +211,11 @@
                 });
                 const si = document.getElementById('search-input');
                 if (si) si.placeholder = translations[currentLang].portfolioSearchPlaceholder || si.placeholder;
+                if (contractsChart) {
+                    contractsChart.data.datasets[0].label = translations[currentLang].chartLegend;
+                    contractsChart.options.plugins.title.text = translations[currentLang].chartTitle;
+                    contractsChart.update();
+                }
                 if(langToggle) langToggle.textContent = currentLang === 'en' ? 'RO' : 'EN';
             }
 
@@ -283,14 +290,16 @@
             const chartYears = Object.keys(byYear).sort();
             const chartValues = chartYears.map(y => Math.round(byYear[y] / 1000));
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            new Chart(document.getElementById('contracts-chart'), {
+            const tickColor = isDark ? '#B0BEC5' : '#4A6572';
+            const gridColor = isDark ? '#333' : '#eee';
+            contractsChart = new Chart(document.getElementById('contracts-chart'), {
                 type: 'bar',
                 data: {
                     labels: chartYears,
                     datasets: [{
-                        label: 'Valoare contracte (mii RON)',
+                        label: translations[currentLang].chartLegend,
                         data: chartValues,
-                        backgroundColor: 'rgba(0, 176, 255, 0.7)',
+                        backgroundColor: 'rgba(0, 176, 255, 0.65)',
                         borderColor: '#00B0FF',
                         borderWidth: 1,
                         borderRadius: 4
@@ -298,13 +307,14 @@
                 },
                 options: {
                     responsive: true,
+                    aspectRatio: 4,
                     plugins: {
-                        legend: { labels: { color: isDark ? '#E0E0E0' : '#2D2D2D' } },
-                        title: { display: true, text: 'Valoare totală contracte pe an (mii RON)', color: isDark ? '#E0E0E0' : '#0D47A1', font: { size: 14, weight: '700' } }
+                        legend: { labels: { color: isDark ? '#E0E0E0' : '#2D2D2D', boxWidth: 12 } },
+                        title: { display: true, text: translations[currentLang].chartTitle, color: isDark ? '#E0E0E0' : '#0D47A1', font: { size: 13, weight: '700' } }
                     },
                     scales: {
-                        x: { ticks: { color: isDark ? '#B0BEC5' : '#4A6572' }, grid: { color: isDark ? '#333' : '#eee' } },
-                        y: { ticks: { color: isDark ? '#B0BEC5' : '#4A6572' }, grid: { color: isDark ? '#333' : '#eee' } }
+                        x: { ticks: { color: tickColor }, grid: { color: gridColor } },
+                        y: { ticks: { color: tickColor }, grid: { color: gridColor } }
                     }
                 }
             });
