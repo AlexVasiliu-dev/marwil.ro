@@ -109,7 +109,7 @@
             <form id="project-form" class="admin-form">
                 <input type="hidden" id="project-id">
                 <div class="form-group"><label>Titlu Proiect</label><input type="text" id="project-title" required></div>
-                <div class="form-group"><label>Categorie</label><input type="text" id="project-category" required></div>
+                <div class="form-group"><label>Categorie</label><input type="text" id="project-category"></div>
                 <div class="form-group"><label>Locație (Oraș)</label><input type="text" id="project-location" required></div>
                 <div class="form-group"><label>Autoritate Contractantă</label><input type="text" id="project-contractor" required></div>
                 <div class="form-group"><label>Valoare Contract (RON)</label><input type="number" id="project-budget" required></div>
@@ -290,11 +290,14 @@
                 submitBtn.textContent = 'Se încarcă...';
                 try {
                     let coverUrl = currentCoverUrl;
+                    console.log('DEBUG submit: currentCoverFile=', currentCoverFile?.name, 'currentCoverUrl=', currentCoverUrl);
                     if (currentCoverFile) {
                         coverUrl = await uploadImage(currentCoverFile, 'covers');
+                        console.log('DEBUG coverUrl after upload=', coverUrl);
                     }
                     const newPhotoUrls = await Promise.all(currentGalleryFiles.map(f => uploadImage(f, 'gallery')));
                     const allPhotoUrls = [...currentGalleryUrls, ...newPhotoUrls];
+                    console.log('DEBUG allPhotoUrls=', allPhotoUrls);
 
                     const idVal = document.getElementById('project-id').value;
                     const project = {
