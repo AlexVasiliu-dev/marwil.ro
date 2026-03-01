@@ -58,9 +58,13 @@ function getStaticProjects() {
 async function getAdminProjects() {
     try {
         const snap = await db.ref('projects').once('value');
+        console.log('DEBUG snap exists:', snap.exists(), '| numChildren:', snap.numChildren());
         if (!snap.exists()) return [];
         const arr = [];
-        snap.forEach(child => arr.push(child.val()));
+        snap.forEach(child => {
+            console.log('DEBUG child key:', child.key);
+            arr.push(child.val());
+        });
         return arr;
     } catch (err) {
         console.warn('Firebase error:', err);
