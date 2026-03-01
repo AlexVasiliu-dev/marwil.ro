@@ -137,7 +137,10 @@
                         <input type="file" id="upload-cover" accept="image/*" style="display:none;">
                         <button type="button" class="upload-btn" onclick="document.getElementById('upload-cover').click()">Încarcă Foto Copertă</button>
                         <span id="cover-status" class="file-status">Nicio imagine selectată</span>
-                        <img id="cover-preview" class="preview-img">
+                        <div style="position:relative;flex-shrink:0;">
+                            <img id="cover-preview" class="preview-img">
+                            <button type="button" id="cover-remove-btn" onclick="clearCoverImage()" style="display:none;position:absolute;top:0;right:0;background:#e53e3e;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:14px;line-height:18px;padding:0;text-align:center;">×</button>
+                        </div>
                     </div>
                 </div>
 
@@ -279,13 +282,25 @@
             logoutBtn.onclick = () => { sessionStorage.removeItem('admin_logged_in'); location.reload(); };
 
             // --- UPLOAD HANDLERS ---
+            function showCoverPreview(src, label) {
+                document.getElementById('cover-preview').src = src;
+                document.getElementById('cover-preview').style.display = 'block';
+                document.getElementById('cover-remove-btn').style.display = 'block';
+                document.getElementById('cover-status').textContent = label;
+            }
+            window.clearCoverImage = () => {
+                currentCoverFile = null; currentCoverUrl = '';
+                document.getElementById('cover-preview').src = '';
+                document.getElementById('cover-preview').style.display = 'none';
+                document.getElementById('cover-remove-btn').style.display = 'none';
+                document.getElementById('cover-status').textContent = 'Nicio imagine selectată';
+                document.getElementById('upload-cover').value = '';
+            };
             document.getElementById('upload-cover').onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
                     currentCoverFile = file;
-                    document.getElementById('cover-preview').src = URL.createObjectURL(file);
-                    document.getElementById('cover-preview').style.display = 'block';
-                    document.getElementById('cover-status').textContent = file.name;
+                    showCoverPreview(URL.createObjectURL(file), file.name);
                 }
             };
 
@@ -363,9 +378,9 @@
                     currentCoverFile = null;
                     currentCoverUrl = p.image || '';
                     if (p.image) {
-                        document.getElementById('cover-preview').src = p.image;
-                        document.getElementById('cover-preview').style.display = 'block';
-                        document.getElementById('cover-status').textContent = 'Imagine existentă';
+                        showCoverPreview(p.image, 'Imagine existentă');
+                    } else {
+                        clearCoverImage();
                     }
 
                     currentGalleryFiles = [];
@@ -387,9 +402,8 @@
                 form.reset();
                 document.getElementById('form-title').textContent = 'Adaugă Proiect Nou';
                 document.getElementById('project-id').value = '';
-                document.getElementById('cover-preview').style.display = 'none';
-                document.getElementById('cover-status').textContent = 'Nicio imagine selectată';
                 currentCoverFile = null; currentCoverUrl = '';
+                clearCoverImage();
                 currentGalleryFiles = []; currentGalleryUrls = [];
                 renderGalleryPreviews();
                 document.getElementById('submit-btn').textContent = 'Salvează Proiect';
