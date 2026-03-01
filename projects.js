@@ -105,8 +105,11 @@ async function uploadImage(file, folder) {
                     body: formData
                 });
                 const data = await response.json();
+                console.log('ImgBB response:', data);
                 if (data.success) {
-                    resolve(data.data.url);
+                    const url = data.data.url || data.data.display_url;
+                    console.log('Saved image URL:', url);
+                    resolve(url);
                 } else {
                     reject(new Error('ImgBB: ' + (data.error?.message || 'Upload failed')));
                 }
