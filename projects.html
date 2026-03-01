@@ -75,7 +75,12 @@
                 <div class="divider"></div>
             </div>
 
-            <!-- 2. Visual Portfolio (Cards with images) -->
+            <!-- 2. Contract Value Chart -->
+            <div style="background:var(--card-bg); border-radius:8px; padding:1.5rem; margin-bottom:2rem;">
+                <canvas id="contracts-chart" height="100"></canvas>
+            </div>
+
+            <!-- 3. Visual Portfolio (Cards with images) -->
             <div class="problem-content" id="featured-projects-container" style="margin-bottom: 3rem;">
                 <!-- Loaded via JS -->
             </div>
@@ -151,6 +156,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="firebase-config.js"></script>
@@ -267,8 +273,43 @@
                 });
             }
 
-            // Table always uses static data — instant, no Firebase dependency
+            // Build chart from static data
             const allProjects = getStaticProjects();
+            const byYear = {};
+            allProjects.forEach(p => {
+                const y = new Date(p.date).getFullYear();
+                byYear[y] = (byYear[y] || 0) + p.value;
+            });
+            const chartYears = Object.keys(byYear).sort();
+            const chartValues = chartYears.map(y => Math.round(byYear[y] / 1000));
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            new Chart(document.getElementById('contracts-chart'), {
+                type: 'bar',
+                data: {
+                    labels: chartYears,
+                    datasets: [{
+                        label: 'Valoare contracte (mii RON)',
+                        data: chartValues,
+                        backgroundColor: 'rgba(0, 176, 255, 0.7)',
+                        borderColor: '#00B0FF',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: isDark ? '#E0E0E0' : '#2D2D2D' } },
+                        title: { display: true, text: 'Valoare totală contracte pe an (mii RON)', color: isDark ? '#E0E0E0' : '#0D47A1', font: { size: 14, weight: '700' } }
+                    },
+                    scales: {
+                        x: { ticks: { color: isDark ? '#B0BEC5' : '#4A6572' }, grid: { color: isDark ? '#333' : '#eee' } },
+                        y: { ticks: { color: isDark ? '#B0BEC5' : '#4A6572' }, grid: { color: isDark ? '#333' : '#eee' } }
+                    }
+                }
+            });
+
+            // Table always uses static data — instant, no Firebase dependency
             renderFullList(allProjects);
 
             if (searchInput) {

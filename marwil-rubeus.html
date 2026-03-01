@@ -47,6 +47,30 @@
         </div>
     </section>
 
+    <!-- Stats Strip -->
+    <section class="stats-strip">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">13</div>
+                    <div class="stat-label" data-i18n="statYears">Ani de Experiență</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-contracts">49+</div>
+                    <div class="stat-label" data-i18n="statContracts">Contracte Finalizate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-clients">30+</div>
+                    <div class="stat-label" data-i18n="statClients">Instituții Deservite</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="stat-value">—</div>
+                    <div class="stat-label" data-i18n="statValue">RON Valoare Contractată</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- About Section -->
     <section id="about" class="solution-section">
         <div class="container">
@@ -115,6 +139,40 @@
                     <h3 data-i18n="service4Title">Construcții Civile</h3>
                     <p data-i18n="service4Text">Servicii de reabilitare interioară și exterioară axate pe îmbunătățirea funcționalității și esteticii, respectând cu strictețe bugetele și termenele limită.</p>
                 </div>
+                <div class="problem-card">
+                    <div class="card-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"></path>
+                            <path d="M12 8v4l3 3"></path>
+                            <path d="M8.5 3.5C6 6 5 9 6 12"></path>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="service5Title">Protecție la Incendiu</h3>
+                    <p data-i18n="service5Text">Distribuitor și instalator autorizat Elide Fire — bile automate de stingere a incendiilor pentru instituții publice, unități militare, spitale și clădiri industriale.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="solution-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-i18n="clientsTitle">Clienți de Referință</h2>
+                <div class="divider"></div>
+            </div>
+            <p style="text-align:center; color:var(--slate); margin-bottom:0.5rem;" data-i18n="clientsSubtitle">Instituții și companii care ne-au acordat încrederea lor</p>
+            <div class="clients-grid">
+                <span class="client-badge">Hidroelectrica SA</span>
+                <span class="client-badge">SNTFC CFR Călători SA</span>
+                <span class="client-badge">Ministerul Apărării Naționale</span>
+                <span class="client-badge">APA CANAL SA Galați</span>
+                <span class="client-badge">Sector 3 – Primăria București</span>
+                <span class="client-badge">Spital Clinic SF. Parascheva Iași</span>
+                <span class="client-badge">Spitalul de Urgență Copii Galați</span>
+                <span class="client-badge">Politia Locală Galați</span>
+                <span class="client-badge">Direcția de Asistență Socială Galați</span>
+                <span class="client-badge">RA Administrația Zonei Libere Galați</span>
             </div>
         </div>
     </section>
@@ -281,6 +339,15 @@
                 document.getElementById('gdpr-bubble').classList.remove('show');
                 localStorage.setItem('gdpr_accepted', 'true');
             };
+
+            // Compute stats from static data
+            const allStatic = getStaticProjects();
+            const totalValue = allStatic.reduce((s, p) => s + p.value, 0);
+            const uniqueClients = new Set(allStatic.map(p => p.authority)).size;
+            document.getElementById('stat-contracts').textContent = allStatic.length + '+';
+            document.getElementById('stat-clients').textContent = uniqueClients + '+';
+            const millions = (totalValue / 1000000).toFixed(1);
+            document.getElementById('stat-value').textContent = millions + 'M';
 
             const hero = document.getElementById('home');
             const defaultImages = ['screens/header%20candidate.png','screens/Sala%20sporturilor%20galati%201.png','screens/Depoul%20cfr%20galati.png'];

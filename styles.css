@@ -531,8 +531,55 @@ body {
     transition: background-color 0.3s;
 }
 
+.project-list-item {
+    cursor: pointer;
+}
+
 .project-list-item:hover {
     background-color: var(--card-bg);
+}
+
+/* Stats strip */
+.stats-strip {
+    background: var(--deep-blue-dark);
+    padding: 3rem 0;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    text-align: center;
+}
+.stat-number {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--sky-blue);
+    font-family: var(--font-serif);
+}
+.stat-label {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.75);
+    margin-top: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Clients section */
+.clients-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+.client-badge {
+    padding: 0.55rem 1.1rem;
+    border: 1px solid var(--sky-blue);
+    border-radius: 4px;
+    font-size: 0.82rem;
+    color: var(--text-color);
+    background: var(--card-bg);
+    font-weight: 500;
 }
 
 /* Featured cards grid — limit width so a single card doesn't stretch full-page */
@@ -920,6 +967,9 @@ body {
     /* CTA Buttons */
     .cta-buttons { flex-direction: column; align-items: stretch; }
     .primary-cta, .secondary-cta { width: 100%; text-align: center; }
+
+    /* Stats strip */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
 
     /* Project list */
     .project-list-header { display: none; }
