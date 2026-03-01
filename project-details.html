@@ -147,5 +147,17 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof getSocialLinks !== 'function') return;
+            getSocialLinks().then(function(links) {
+                var map = { Facebook: links.facebook, Instagram: links.instagram, X: links.x, LinkedIn: links.linkedin, YouTube: links.youtube };
+                document.querySelectorAll('.social-icon[aria-label]').forEach(function(el) {
+                    var url = map[el.getAttribute('aria-label')];
+                    if (url) { el.href = url; } else { el.style.display = 'none'; }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -12,7 +12,7 @@
         .btn-add { background: var(--deep-blue); color: #fff; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; transition: background 0.3s; }
         .btn-add:hover { background: var(--sky-blue); }
         #photo-manager { grid-column: span 2; }
-        
+
         .login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--deep-blue-dark); z-index: 9999;
@@ -23,9 +23,7 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: calc(100% - 2rem); max-width: 400px; text-align: center;
         }
         .login-box input { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid var(--slate); border-radius: 4px; }
-        @media (max-width: 768px) {
-            .login-box { padding: 2rem 1.5rem; }
-        }
+        @media (max-width: 768px) { .login-box { padding: 2rem 1.5rem; } }
         #admin-content { display: none; }
 
         /* Upload Styling */
@@ -38,10 +36,7 @@
         .preview-img { height: 50px; border-radius: 4px; border: 1px solid var(--slate); display: none; }
 
         /* Banner Manager */
-        .banner-manager-section {
-            border: 1px solid var(--slate); border-radius: 8px;
-            padding: 1.5rem; margin-top: 2.5rem;
-        }
+        .banner-manager-section { border: 1px solid var(--slate); border-radius: 8px; padding: 1.5rem; }
         .banner-manager-section h3 { margin-bottom: 0.4rem; }
         .banner-manager-section > p { font-size: 0.82rem; color: var(--slate); margin-bottom: 1.2rem; }
         .banner-slots-grid { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -67,6 +62,41 @@
             padding: 0 4px; border-radius: 3px; line-height: 1;
         }
         .banner-remove-btn:hover { background: #fed7d7; }
+
+        /* Tabs */
+        .admin-tabs {
+            display: flex; gap: 0; border-bottom: 2px solid var(--sky-blue);
+            margin-bottom: 2rem; overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 0.75rem 1.75rem; background: none; border: none;
+            border-bottom: 3px solid transparent; cursor: pointer;
+            font-size: 1rem; font-weight: 600; color: var(--slate);
+            transition: color 0.2s, border-color 0.2s; margin-bottom: -2px;
+            white-space: nowrap;
+        }
+        .tab-btn.active { color: var(--sky-blue); border-bottom-color: var(--sky-blue); }
+        .tab-btn:hover:not(.active) { color: var(--deep-blue); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Social Links Tab */
+        .social-form { max-width: 560px; }
+        .social-row {
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .social-row .social-label {
+            display: flex; align-items: center; gap: 0.5rem;
+            width: 130px; flex-shrink: 0; font-weight: 500;
+        }
+        .social-row .social-label svg { width: 20px; height: 20px; fill: var(--deep-blue); }
+        .social-row input {
+            flex: 1; padding: 0.6rem 0.8rem;
+            border: 1px solid var(--slate); border-radius: 4px;
+            background: var(--bg-color); color: var(--text-color); font-size: 0.9rem;
+        }
+        .social-save-status { font-size: 0.85rem; color: var(--sky-blue); margin-left: 0.5rem; }
     </style>
 </head>
 <body>
@@ -104,84 +134,145 @@
         </nav>
 
         <div class="container admin-container" style="margin-top: 120px;">
-            <h3 id="form-title">Adaugă Proiect Nou</h3>
 
-            <form id="project-form" class="admin-form">
-                <input type="hidden" id="project-id">
-                <div class="form-group"><label>Titlu Proiect</label><input type="text" id="project-title" required></div>
-                <div class="form-group"><label>Categorie</label><input type="text" id="project-category"></div>
-                <div class="form-group"><label>Locație (Oraș)</label><input type="text" id="project-location" required></div>
-                <div class="form-group"><label>Autoritate Contractantă</label><input type="text" id="project-contractor" required></div>
-                <div class="form-group"><label>Valoare Contract (RON)</label><input type="number" id="project-budget" required></div>
-                <div class="form-group"><label>Cod CPV</label><input type="text" id="project-cpv" placeholder="Ex: 45232150-8"></div>
-                <div class="form-group"><label>Stare Contract</label>
-                    <select id="project-status">
-                        <option value="Atribuita">Atribuită</option>
-                        <option value="Publicat">Publicat</option>
-                        <option value="Oferta acceptata">Ofertă acceptată</option>
-                        <option value="Oferta refuzata">Ofertă refuzată</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Tip Proiect</label>
-                    <select id="project-type">
-                        <option value="Lucrari">Lucrări</option>
-                        <option value="Servicii">Servicii</option>
-                        <option value="Furnizare">Furnizare</option>
-                    </select>
-                </div>
+            <!-- Tab Bar -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="projects">📁 Proiecte</button>
+                <button class="tab-btn" data-tab="banners">🖼️ Bannere</button>
+                <button class="tab-btn" data-tab="social">🔗 Social Media</button>
+            </div>
 
-                <!-- Cover Image Upload -->
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Imagine Copertă (Featured Card)</label>
-                    <div class="upload-wrapper">
-                        <input type="file" id="upload-cover" accept="image/*" style="display:none;">
-                        <button type="button" class="upload-btn" onclick="document.getElementById('upload-cover').click()">Încarcă Foto Copertă</button>
-                        <span id="cover-status" class="file-status">Nicio imagine selectată</span>
-                        <div style="position:relative;flex-shrink:0;">
-                            <img id="cover-preview" class="preview-img">
-                            <button type="button" id="cover-remove-btn" onclick="clearCoverImage()" style="display:none;position:absolute;top:0;right:0;background:#e53e3e;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:14px;line-height:18px;padding:0;text-align:center;">×</button>
+            <!-- ── TAB: PROIECTE ── -->
+            <div id="tab-projects" class="tab-panel active">
+                <h3 id="form-title">Adaugă Proiect Nou</h3>
+
+                <form id="project-form" class="admin-form">
+                    <input type="hidden" id="project-id">
+                    <div class="form-group"><label>Titlu Proiect</label><input type="text" id="project-title" required></div>
+                    <div class="form-group"><label>Categorie</label><input type="text" id="project-category"></div>
+                    <div class="form-group"><label>Locație (Oraș)</label><input type="text" id="project-location" required></div>
+                    <div class="form-group"><label>Autoritate Contractantă</label><input type="text" id="project-contractor" required></div>
+                    <div class="form-group"><label>Valoare Contract (RON)</label><input type="number" id="project-budget" required></div>
+                    <div class="form-group"><label>Cod CPV</label><input type="text" id="project-cpv" placeholder="Ex: 45232150-8"></div>
+                    <div class="form-group"><label>Stare Contract</label>
+                        <select id="project-status">
+                            <option value="Atribuita">Atribuită</option>
+                            <option value="Publicat">Publicat</option>
+                            <option value="Oferta acceptata">Ofertă acceptată</option>
+                            <option value="Oferta refuzata">Ofertă refuzată</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Tip Proiect</label>
+                        <select id="project-type">
+                            <option value="Lucrari">Lucrări</option>
+                            <option value="Servicii">Servicii</option>
+                            <option value="Furnizare">Furnizare</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Imagine Copertă (Featured Card)</label>
+                        <div class="upload-wrapper">
+                            <input type="file" id="upload-cover" accept="image/*" style="display:none;">
+                            <button type="button" class="upload-btn" onclick="document.getElementById('upload-cover').click()">Încarcă Foto Copertă</button>
+                            <span id="cover-status" class="file-status">Nicio imagine selectată</span>
+                            <div style="position:relative;flex-shrink:0;">
+                                <img id="cover-preview" class="preview-img">
+                                <button type="button" id="cover-remove-btn" onclick="clearCoverImage()" style="display:none;position:absolute;top:0;right:0;background:#e53e3e;color:#fff;border:none;border-radius:50%;width:18px;height:18px;cursor:pointer;font-size:14px;line-height:18px;padding:0;text-align:center;">×</button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group" style="grid-column: span 2;"><label>Descriere / Obiect</label><textarea id="project-scope" rows="4"></textarea></div>
-                
-                <!-- Gallery Upload -->
-                <div id="photo-manager">
-                    <label>Galerie Foto Proiect (Documentație Vizuală)</label>
-                    <div class="upload-wrapper" style="margin-top: 10px; flex-wrap: wrap;">
-                        <input type="file" id="upload-gallery" accept="image/*" multiple style="display:none;">
-                        <button type="button" class="upload-btn" style="background: var(--deep-blue);" onclick="document.getElementById('upload-gallery').click()">Adaugă Fotografii în Galerie</button>
-                        <span id="gallery-status" class="file-status">0 imagini în galerie</span>
-                        <div id="gallery-previews" style="display:flex; gap:5px; width:100%; margin-top:10px; overflow-x:auto;"></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Descriere / Obiect</label><textarea id="project-scope" rows="4"></textarea></div>
+
+                    <div id="photo-manager">
+                        <label>Galerie Foto Proiect (Documentație Vizuală)</label>
+                        <div class="upload-wrapper" style="margin-top: 10px; flex-wrap: wrap;">
+                            <input type="file" id="upload-gallery" accept="image/*" multiple style="display:none;">
+                            <button type="button" class="upload-btn" style="background: var(--deep-blue);" onclick="document.getElementById('upload-gallery').click()">Adaugă Fotografii în Galerie</button>
+                            <span id="gallery-status" class="file-status">0 imagini în galerie</span>
+                            <div id="gallery-previews" style="display:flex; gap:5px; width:100%; margin-top:10px; overflow-x:auto;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2; display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn-add" id="submit-btn">Salvează Proiect</button>
+                        <button type="button" class="action-btn" style="background: #999; color: #fff;" onclick="resetForm()">Anulează</button>
+                    </div>
+                </form>
+
+                <table class="admin-table" style="margin-top: 2rem;">
+                    <thead><tr><th>Stare</th><th>Titlu</th><th>Categorie</th><th>ID / CPV</th><th>Acțiuni</th></tr></thead>
+                    <tbody id="admin-projects-list"></tbody>
+                </table>
+            </div>
+
+            <!-- ── TAB: BANNERE ── -->
+            <div id="tab-banners" class="tab-panel">
+                <div class="banner-manager-section">
+                    <h3>Imagini Banner (Pagina Principală)</h3>
+                    <p>Imaginile se salvează automat după upload. Dacă nu există imagini personalizate, se afișează cele implicite de mai jos.</p>
+                    <div id="banner-slots" class="banner-slots-grid"></div>
+                </div>
+            </div>
+
+            <!-- ── TAB: SOCIAL MEDIA ── -->
+            <div id="tab-social" class="tab-panel">
+                <h3>Link-uri Social Media</h3>
+                <p style="color:var(--slate); margin-bottom: 1.5rem;">Completați link-urile conturilor. Lăsați gol pentru a ascunde iconița pe site.</p>
+
+                <div class="social-form">
+                    <div class="social-row">
+                        <span class="social-label">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            Facebook
+                        </span>
+                        <input type="url" id="social-facebook" placeholder="https://facebook.com/MarwilRubeus">
+                    </div>
+                    <div class="social-row">
+                        <span class="social-label">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            Instagram
+                        </span>
+                        <input type="url" id="social-instagram" placeholder="https://instagram.com/MarwilRubeus">
+                    </div>
+                    <div class="social-row">
+                        <span class="social-label">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+                            X (Twitter)
+                        </span>
+                        <input type="url" id="social-x" placeholder="https://x.com/MarwilRubeus">
+                    </div>
+                    <div class="social-row">
+                        <span class="social-label">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            LinkedIn
+                        </span>
+                        <input type="url" id="social-linkedin" placeholder="https://linkedin.com/company/MarwilRubeus">
+                    </div>
+                    <div class="social-row">
+                        <span class="social-label">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            YouTube
+                        </span>
+                        <input type="url" id="social-youtube" placeholder="https://youtube.com/@MarwilRubeus">
+                    </div>
+
+                    <div style="margin-top: 1.5rem; display: flex; align-items: center; gap: 1rem;">
+                        <button type="button" class="btn-add" id="save-social-btn">Salvează Link-uri</button>
+                        <span id="social-save-status" class="social-save-status"></span>
                     </div>
                 </div>
-
-                <div class="form-group" style="grid-column: span 2; display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="submit" class="btn-add" id="submit-btn">Salvează Proiect</button>
-                    <button type="button" class="action-btn" style="background: #999; color: #fff;" onclick="resetForm()">Anulează</button>
-                </div>
-            </form>
-
-            <table class="admin-table">
-                <thead><tr><th>Stare</th><th>Titlu</th><th>Categorie</th><th>ID / CPV</th><th>Acțiuni</th></tr></thead>
-                <tbody id="admin-projects-list"></tbody>
-            </table>
-
-            <!-- Banner Image Manager -->
-            <div class="banner-manager-section">
-                <h3>Imagini Banner (Pagina Principală)</h3>
-                <p>Imaginile se salvează automat după upload. Dacă nu există imagini personalizate, se afișează cele implicite de mai jos.</p>
-                <div id="banner-slots" class="banner-slots-grid"></div>
             </div>
-        </div>
+
+        </div><!-- /container -->
 
         <footer class="footer">
             <div class="container">
                 <div class="footer-content">
                     <div class="footer-logo">
                         <img src="logo.png" alt="Marwil Rubeus Logo">
-                        <p>Soluții sustenabile în energie regenerabilă și infrastructură din 2013.</p>
+                        <p>Antreprenori în energie regenerabilă și infrastructură — Galați, din 2013.</p>
                     </div>
                     <div class="footer-links">
                         <div class="footer-column">
@@ -229,6 +320,33 @@
                     mobileBtn.classList.toggle('open');
                 });
             }
+
+            // --- Theme ---
+            const html = document.documentElement;
+            function safeGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+            function safeSet(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+            const savedTheme = safeGet('theme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+                themeToggle.onclick = () => {
+                    const t = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                    html.setAttribute('data-theme', t);
+                    safeSet('theme', t);
+                    themeToggle.textContent = t === 'light' ? '🌙' : '☀️';
+                };
+            }
+
+            // --- Tabs ---
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                });
+            });
 
             const loginOverlay = document.getElementById('login-overlay');
             const adminContent = document.getElementById('admin-content');
@@ -305,12 +423,8 @@
             };
             document.getElementById('upload-cover').onchange = (e) => {
                 const file = e.target.files[0];
-                if (file) {
-                    currentCoverFile = file;
-                    showCoverPreview(URL.createObjectURL(file), file.name);
-                }
+                if (file) { currentCoverFile = file; showCoverPreview(URL.createObjectURL(file), file.name); }
             };
-
             document.getElementById('upload-gallery').onchange = (e) => {
                 Array.from(e.target.files).forEach(file => currentGalleryFiles.push(file));
                 e.target.value = '';
@@ -330,16 +444,12 @@
             form.onsubmit = async (e) => {
                 e.preventDefault();
                 const submitBtn = document.getElementById('submit-btn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Se încarcă...';
+                submitBtn.disabled = true; submitBtn.textContent = 'Se încarcă...';
                 try {
                     let coverUrl = currentCoverUrl;
-                    if (currentCoverFile) {
-                        coverUrl = await uploadImage(currentCoverFile, 'covers');
-                    }
+                    if (currentCoverFile) coverUrl = await uploadImage(currentCoverFile, 'covers');
                     const newPhotoUrls = await Promise.all(currentGalleryFiles.map(f => uploadImage(f, 'gallery')));
                     const allPhotoUrls = [...currentGalleryUrls, ...newPhotoUrls];
-
                     const idVal = document.getElementById('project-id').value;
                     const project = {
                         id: idVal ? parseInt(idVal) : Date.now(),
@@ -350,8 +460,7 @@
                         value: parseFloat(document.getElementById('project-budget').value),
                         cpv: document.getElementById('project-cpv').value,
                         status: document.getElementById('project-status').value,
-                        image: coverUrl,
-                        photos: allPhotoUrls,
+                        image: coverUrl, photos: allPhotoUrls,
                         scope: document.getElementById('project-scope').value,
                         date: new Date().toISOString()
                     };
@@ -362,8 +471,7 @@
                 } catch (err) {
                     alert('Eroare: ' + err.message);
                 } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Salvează Proiect';
+                    submitBtn.disabled = false; submitBtn.textContent = 'Salvează Proiect';
                 }
             };
 
@@ -381,28 +489,23 @@
                     document.getElementById('project-status').value = p.status;
                     document.getElementById('project-type').value = p.project_type;
                     document.getElementById('project-scope').value = p.scope || '';
-
-                    currentCoverFile = null;
-                    currentCoverUrl = p.image || '';
-                    if (p.image) {
-                        showCoverPreview(p.image, 'Imagine existentă');
-                    } else {
-                        clearCoverImage();
-                    }
-
-                    currentGalleryFiles = [];
-                    currentGalleryUrls = p.photos || [];
+                    currentCoverFile = null; currentCoverUrl = p.image || '';
+                    if (p.image) showCoverPreview(p.image, 'Imagine existentă');
+                    else clearCoverImage();
+                    currentGalleryFiles = []; currentGalleryUrls = p.photos || [];
                     renderGalleryPreviews();
                     document.getElementById('submit-btn').textContent = 'Actualizează Proiect';
+                    // Switch to projects tab and scroll up
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                    document.querySelector('[data-tab="projects"]').classList.add('active');
+                    document.getElementById('tab-projects').classList.add('active');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             };
 
             window.handleDelete = async (id) => {
-                if (confirm('Ștergi?')) {
-                    await deleteProject(id);
-                    await loadAdminProjects();
-                }
+                if (confirm('Ștergi?')) { await deleteProject(id); await loadAdminProjects(); }
             };
 
             window.resetForm = () => {
@@ -430,22 +533,14 @@
                 const images = await getBannerImages();
                 const hasCustom = images.filter(Boolean).length > 0;
                 container.innerHTML = '';
-
                 if (!hasCustom) {
-                    // Show defaults as read-only preview
                     DEFAULT_BANNERS.forEach((src, i) => {
                         const slot = document.createElement('div');
                         slot.className = 'banner-slot filled';
                         slot.style.cssText = 'flex-direction:column;align-items:flex-start;gap:6px;';
-                        slot.innerHTML = `
-                            <img src="${src}" style="width:100%;height:70px;object-fit:cover;border-radius:3px;">
-                            <span class="banner-filename" style="font-style:italic;color:var(--slate);">Implicit ${i+1}</span>
-                            <input type="file" id="banner-file-${i}" accept="image/*" style="display:none;" onchange="uploadBannerImage(${i}, this)">
-                            <button type="button" class="upload-btn" style="font-size:0.7rem;padding:4px 10px;width:100%;" onclick="document.getElementById('banner-file-${i}').click()">Înlocuiește</button>
-                        `;
+                        slot.innerHTML = `<img src="${src}" style="width:100%;height:70px;object-fit:cover;border-radius:3px;"><span class="banner-filename" style="font-style:italic;color:var(--slate);">Implicit ${i+1}</span><input type="file" id="banner-file-${i}" accept="image/*" style="display:none;" onchange="uploadBannerImage(${i}, this)"><button type="button" class="upload-btn" style="font-size:0.7rem;padding:4px 10px;width:100%;" onclick="document.getElementById('banner-file-${i}').click()">Înlocuiește</button>`;
                         container.appendChild(slot);
                     });
-                    // Remaining empty slots
                     for (let i = DEFAULT_BANNERS.length; i < 5; i++) {
                         const slot = document.createElement('div');
                         slot.className = 'banner-slot';
@@ -454,19 +549,12 @@
                     }
                     return;
                 }
-
                 images.forEach((img, i) => {
                     const slot = document.createElement('div');
                     if (img) {
                         slot.className = 'banner-slot filled';
                         slot.style.cssText = 'flex-direction:column;align-items:flex-start;gap:6px;';
-                        slot.innerHTML = `
-                            <img src="${img.src}" style="width:100%;height:70px;object-fit:cover;border-radius:3px;">
-                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-                                <span class="banner-filename" title="${img.name}">${img.name}</span>
-                                <button type="button" class="banner-remove-btn" onclick="removeBannerImage(${i})">&#x2715;</button>
-                            </div>
-                        `;
+                        slot.innerHTML = `<img src="${img.src}" style="width:100%;height:70px;object-fit:cover;border-radius:3px;"><div style="display:flex;align-items:center;justify-content:space-between;width:100%;"><span class="banner-filename" title="${img.name}">${img.name}</span><button type="button" class="banner-remove-btn" onclick="removeBannerImage(${i})">&#x2715;</button></div>`;
                     } else {
                         slot.className = 'banner-slot';
                         slot.innerHTML = `<input type="file" id="banner-file-${i}" accept="image/*" style="display:none;" onchange="uploadBannerImage(${i}, this)"><button type="button" class="upload-btn" onclick="document.getElementById('banner-file-${i}').click()">Încarcă Foto</button><span class="slot-label">Slot ${i + 1}</span>`;
@@ -476,8 +564,7 @@
             };
 
             window.uploadBannerImage = async function(index, input) {
-                const file = input.files[0];
-                if (!file) return;
+                const file = input.files[0]; if (!file) return;
                 const slot = input.parentElement;
                 const btn = slot.querySelector('.upload-btn');
                 if (btn) { btn.disabled = true; btn.textContent = 'Se încarcă...'; }
@@ -500,10 +587,43 @@
                 await renderBannerSlots();
             };
 
-            // Init — called after all functions are defined
+            // --- SOCIAL LINKS ---
+            async function loadSocialLinks() {
+                const links = await getSocialLinks();
+                document.getElementById('social-facebook').value = links.facebook || '';
+                document.getElementById('social-instagram').value = links.instagram || '';
+                document.getElementById('social-x').value = links.x || '';
+                document.getElementById('social-linkedin').value = links.linkedin || '';
+                document.getElementById('social-youtube').value = links.youtube || '';
+            }
+
+            document.getElementById('save-social-btn').onclick = async () => {
+                const btn = document.getElementById('save-social-btn');
+                const status = document.getElementById('social-save-status');
+                btn.disabled = true; btn.textContent = 'Se salvează...';
+                try {
+                    await saveSocialLinksDB({
+                        facebook: document.getElementById('social-facebook').value.trim(),
+                        instagram: document.getElementById('social-instagram').value.trim(),
+                        x: document.getElementById('social-x').value.trim(),
+                        linkedin: document.getElementById('social-linkedin').value.trim(),
+                        youtube: document.getElementById('social-youtube').value.trim()
+                    });
+                    status.textContent = '✓ Salvat!';
+                    setTimeout(() => { status.textContent = ''; }, 3000);
+                } catch(err) {
+                    status.style.color = '#e53e3e';
+                    status.textContent = 'Eroare: ' + err.message;
+                } finally {
+                    btn.disabled = false; btn.textContent = 'Salvează Link-uri';
+                }
+            };
+
+            // --- INIT ---
             if (sessionStorage.getItem('admin_logged_in') === 'true') {
                 loadAdminProjects();
                 renderBannerSlots();
+                loadSocialLinks();
             }
         });
     </script>

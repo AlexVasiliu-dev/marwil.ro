@@ -123,6 +123,18 @@ async function saveBannerImages(images) {
     await db.ref('banner_images').set(obj);
 }
 
+async function getSocialLinks() {
+    try {
+        return await new Promise(resolve => {
+            db.ref('social').once('value', snap => resolve(snap.val() || {}));
+        });
+    } catch(e) { return {}; }
+}
+
+async function saveSocialLinksDB(links) {
+    await db.ref('social').set(links);
+}
+
 function getAdminPass() {
     return ADMIN_PASSWORD;
 }
