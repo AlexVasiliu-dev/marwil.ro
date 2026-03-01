@@ -82,8 +82,8 @@
 
             <!-- 3. Table Header -->
             <div class="table-title-area">
-                <div class="table-title">Toate contractele cu caracter public-privat</div>
-                <div class="table-source">(Sursa: SEAP)</div>
+                <div class="table-title" data-i18n="portfolioTableTitle">Toate contractele cu caracter public-privat</div>
+                <div class="table-source" data-i18n="portfolioTableSource">(Sursa: SEAP)</div>
             </div>
 
             <!-- 4. Search Bar (Between Title and Table) -->
@@ -94,11 +94,11 @@
             <!-- 5. Complete Project History (Table) -->
             <div class="project-list-container">
                 <div class="project-list-header">
-                    <div>Denumire Proiect</div>
-                    <div>Autoritate Contractantă</div>
-                    <div>Valoare (RON)</div>
-                    <div>Cod CPV</div>
-                    <div>Stare</div>
+                    <div data-i18n="portfolioColName">Denumire Proiect</div>
+                    <div data-i18n="portfolioColAuthority">Autoritate Contractantă</div>
+                    <div data-i18n="portfolioColValue">Valoare (RON)</div>
+                    <div data-i18n="portfolioColCPV">Cod CPV</div>
+                    <div data-i18n="portfolioColStatus">Stare</div>
                 </div>
                 <div id="full-project-list">
                     <!-- Loaded via JS -->
@@ -201,6 +201,8 @@
                         el.textContent = translations[currentLang][key];
                     }
                 });
+                const si = document.getElementById('search-input');
+                if (si) si.placeholder = translations[currentLang].portfolioSearchPlaceholder || si.placeholder;
                 if(langToggle) langToggle.textContent = currentLang === 'en' ? 'RO' : 'EN';
             }
 
