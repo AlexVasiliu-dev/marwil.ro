@@ -589,6 +589,10 @@ body {
     justify-content: center;
 }
 
+#featured-projects-container {
+    transition: opacity 0.4s ease;
+}
+
 /* Projects Grid & Cards Enhancement */
 .project-card {
     background-color: var(--card-bg);

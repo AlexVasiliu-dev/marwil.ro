@@ -75,12 +75,7 @@
                 <div class="divider"></div>
             </div>
 
-            <!-- 2. Contract Value Chart -->
-            <div style="background:var(--card-bg); border-radius:8px; padding:1.5rem; margin-bottom:2rem;">
-                <canvas id="contracts-chart" height="100"></canvas>
-            </div>
-
-            <!-- 3. Visual Portfolio (Cards with images) -->
+            <!-- 2. Visual Portfolio (Cards with images) -->
             <div class="problem-content" id="featured-projects-container" style="margin-bottom: 3rem;">
                 <!-- Loaded via JS -->
             </div>
@@ -108,6 +103,11 @@
                 <div id="full-project-list">
                     <!-- Loaded via JS -->
                 </div>
+            </div>
+
+            <!-- Chart — bottom of page -->
+            <div style="background:var(--card-bg); border-radius:8px; padding:1.5rem; margin-top:2rem;">
+                <canvas id="contracts-chart"></canvas>
             </div>
         </div>
     </main>
@@ -335,23 +335,50 @@
                 });
             }
 
-            // Featured cards load from Firebase (admin-managed with images)
+            // Featured cards — smart grid + rotation
             getAdminProjects().then(adminProjects => {
                 const withImages = adminProjects.filter(p => p.image);
-                if (featuredContainer && withImages.length > 0) {
-                    withImages.forEach(p => {
-                        featuredContainer.innerHTML += `
-                            <a href="project-details.html?id=${p.id}" class="project-card">
-                                <img src="${p.image}" alt="${p.name}" class="project-image">
-                                <div class="project-info">
-                                    <div class="project-category">${p.project_type}</div>
-                                    <h3>${p.name}</h3>
-                                    <div style="color: var(--sky-blue); font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem;">📍 ${p.city}</div>
-                                    <p><strong>Valoare:</strong> ${Number(p.value).toLocaleString('ro-RO')} RON</p>
-                                </div>
-                            </a>
-                        `;
-                    });
+                if (!featuredContainer || withImages.length === 0) return;
+
+                const MAX = 6;
+                let offset = 0;
+
+                function gridCols(n) {
+                    if (n <= 3) return n;
+                    if (n === 4) return 2;
+                    return 3; // 5 or 6
+                }
+
+                function cardHTML(p) {
+                    return `<a href="project-details.html?id=${p.id}" class="project-card">
+                        <img src="${p.image}" alt="${p.name}" class="project-image">
+                        <div class="project-info">
+                            <div class="project-category">${p.project_type}</div>
+                            <h3>${p.name}</h3>
+                            <div style="color:var(--sky-blue);font-weight:700;margin-bottom:0.5rem;font-size:0.8rem;">📍 ${p.city}</div>
+                            <p><strong>Valoare:</strong> ${Number(p.value).toLocaleString('ro-RO')} RON</p>
+                        </div>
+                    </a>`;
+                }
+
+                function renderFeatured() {
+                    const size = Math.min(withImages.length, MAX);
+                    const batch = Array.from({length: size}, (_, i) => withImages[(offset + i) % withImages.length]);
+                    featuredContainer.style.gridTemplateColumns = `repeat(${gridCols(batch.length)}, 1fr)`;
+                    featuredContainer.innerHTML = batch.map(cardHTML).join('');
+                }
+
+                renderFeatured();
+
+                if (withImages.length > MAX) {
+                    setInterval(() => {
+                        featuredContainer.style.opacity = '0';
+                        setTimeout(() => {
+                            offset = (offset + MAX) % withImages.length;
+                            renderFeatured();
+                            featuredContainer.style.opacity = '1';
+                        }, 400);
+                    }, 5000);
                 }
             });
         });
