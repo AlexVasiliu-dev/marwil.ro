@@ -91,35 +91,19 @@ async function deleteProject(id) {
 }
 
 async function uploadImage(file, folder) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async () => {
-            try {
-                const base64 = reader.result.split(',')[1];
-                const formData = new FormData();
-                formData.append('key', IMGBB_API_KEY);
-                formData.append('image', base64);
-                formData.append('name', folder + '_' + Date.now());
-                const response = await fetch('https://api.imgbb.com/1/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                console.log('ImgBB response:', data);
-                if (data.success) {
-                    const url = data.data.url || data.data.display_url;
-                    console.log('Saved image URL:', url);
-                    resolve(url);
-                } else {
-                    reject(new Error('ImgBB: ' + (data.error?.message || 'Upload failed')));
-                }
-            } catch (err) {
-                reject(err);
-            }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'preset1');
+    formData.append('folder', folder);
+    const response = await fetch('https://api.cloudinary.com/v1_1/dvwipbit22/image/upload', {
+        method: 'POST',
+        body: formData
     });
+    const data = await response.json();
+    if (data.secure_url) {
+        return data.secure_url;
+    }
+    throw new Error('Upload failed: ' + (data.error?.message || 'Unknown error'));
 }
 
 async function getBannerImages() {
