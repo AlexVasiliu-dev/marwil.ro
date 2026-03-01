@@ -91,10 +91,32 @@ async function deleteProject(id) {
 }
 
 async function uploadImage(file, folder) {
-    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const ref = storage.ref(folder + '/' + Date.now() + '_' + safe);
-    await ref.put(file);
-    return await ref.getDownloadURL();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+            try {
+                const base64 = reader.result.split(',')[1];
+                const formData = new FormData();
+                formData.append('key', IMGBB_API_KEY);
+                formData.append('image', base64);
+                formData.append('name', folder + '_' + Date.now());
+                const response = await fetch('https://api.imgbb.com/1/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    resolve(data.data.url);
+                } else {
+                    reject(new Error('ImgBB: ' + (data.error?.message || 'Upload failed')));
+                }
+            } catch (err) {
+                reject(err);
+            }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 async function getBannerImages() {

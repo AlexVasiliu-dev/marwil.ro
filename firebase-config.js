@@ -15,6 +15,8 @@ const firebaseConfig = {
 // Admin password
 const ADMIN_PASSWORD = 'Rubeus2025%';
 
+// ImgBB API key — get a free key at https://api.imgbb.com
+const IMGBB_API_KEY = '854d2ef54d5764c383e88098d902fd2a';
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const storage = firebase.storage();
