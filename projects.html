@@ -285,6 +285,7 @@
             // Featured cards load from Firebase (admin-managed with images)
             getAdminProjects().then(adminProjects => {
                 const withImages = adminProjects.filter(p => p.image);
+                console.log('featured count:', withImages.length);
                 if (featuredContainer && withImages.length > 0) {
                     withImages.forEach(p => {
                         featuredContainer.innerHTML += `
