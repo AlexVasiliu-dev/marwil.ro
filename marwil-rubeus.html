@@ -295,12 +295,18 @@
                 }
             });
 
+            const statusColorMap = {
+                'Atribuita': 'status-finished', 'Oferta acceptata': 'status-finished',
+                'Publicat': 'status-ongoing', 'Oferta refuzata': 'status-future',
+                'Oferta neacceptata in termen': 'status-future', 'Conditii neacceptate la termen': 'status-future'
+            };
             const container = document.getElementById('projects-container');
             getProjects().then(all => {
                 const featured = all.filter(p => p.image).slice(0, 3);
                 if (container) {
                     featured.forEach(project => {
-                        const card = `<a href="project-details.html?id=${project.id}" class="project-card"><div class="project-status status-finished">${project.status}</div><img src="${project.image}" alt="${project.name}" class="project-image"><div class="project-info"><div class="project-category">${project.project_type}</div><h3>${project.name}</h3><p>${project.city}</p></div></a>`;
+                        const statusClass = statusColorMap[project.status] || 'status-future';
+                        const card = `<a href="project-details.html?id=${project.id}" class="project-card"><img src="${project.image}" alt="${project.name}" class="project-image"><div class="project-info"><div class="project-category">${project.project_type}</div><h3>${project.name}</h3><p style="color:var(--sky-blue);font-weight:700;font-size:0.8rem;">📍 ${project.city}</p><p><strong>Valoare:</strong> ${Number(project.value).toLocaleString('ro-RO')} RON</p><span class="project-status-badge ${statusClass}">${project.status}</span></div></a>`;
                         container.innerHTML += card;
                     });
                 }

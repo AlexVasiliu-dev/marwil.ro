@@ -536,7 +536,8 @@ body {
 }
 
 /* Featured cards grid — limit width so a single card doesn't stretch full-page */
-#featured-projects-container {
+#featured-projects-container,
+#projects-container {
     grid-template-columns: repeat(auto-fill, minmax(280px, 380px));
     justify-content: center;
 }
