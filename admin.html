@@ -290,14 +290,11 @@
                 submitBtn.textContent = 'Se încarcă...';
                 try {
                     let coverUrl = currentCoverUrl;
-                    console.log('DEBUG submit: currentCoverFile=', currentCoverFile?.name, 'currentCoverUrl=', currentCoverUrl);
                     if (currentCoverFile) {
                         coverUrl = await uploadImage(currentCoverFile, 'covers');
-                        console.log('DEBUG coverUrl after upload=', coverUrl);
                     }
                     const newPhotoUrls = await Promise.all(currentGalleryFiles.map(f => uploadImage(f, 'gallery')));
                     const allPhotoUrls = [...currentGalleryUrls, ...newPhotoUrls];
-                    console.log('DEBUG allPhotoUrls=', allPhotoUrls);
 
                     const idVal = document.getElementById('project-id').value;
                     const project = {
@@ -314,14 +311,11 @@
                         scope: document.getElementById('project-scope').value,
                         date: new Date().toISOString()
                     };
-                    console.log('DEBUG saving project:', JSON.stringify({id: project.id, image: project.image}));
                     await saveProject(project);
-                    console.log('DEBUG saveProject done');
                     resetForm();
                     await loadAdminProjects();
                     alert('Proiect salvat!');
                 } catch (err) {
-                    console.error('DEBUG catch error:', err);
                     alert('Eroare: ' + err.message);
                 } finally {
                     submitBtn.disabled = false;

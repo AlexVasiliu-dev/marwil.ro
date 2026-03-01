@@ -535,6 +535,12 @@ body {
     background-color: var(--card-bg);
 }
 
+/* Featured cards grid — limit width so a single card doesn't stretch full-page */
+#featured-projects-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 380px));
+    justify-content: center;
+}
+
 /* Projects Grid & Cards Enhancement */
 .project-card {
     background-color: var(--card-bg);

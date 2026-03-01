@@ -284,19 +284,17 @@
 
             // Featured cards load from Firebase (admin-managed with images)
             getAdminProjects().then(adminProjects => {
-                console.log('DEBUG adminProjects:', JSON.stringify(adminProjects));
                 const withImages = adminProjects.filter(p => p.image);
-                console.log('DEBUG withImages:', withImages);
                 if (featuredContainer && withImages.length > 0) {
                     withImages.forEach(p => {
                         featuredContainer.innerHTML += `
                             <a href="project-details.html?id=${p.id}" class="project-card">
+                                <img src="${p.image}" alt="${p.name}" class="project-image">
                                 <div class="project-info">
                                     <div class="project-category">${p.project_type}</div>
                                     <h3>${p.name}</h3>
                                     <div style="color: var(--sky-blue); font-weight: 700; margin-bottom: 0.5rem; font-size: 0.8rem;">📍 ${p.city}</div>
-                                    <img src="${p.image}" alt="${p.name}" class="project-image" style="margin-top: 10px; border-radius: 4px;">
-                                    <p style="margin-top: 10px;"><strong>Valoare:</strong> ${Number(p.value).toLocaleString('ro-RO')} RON</p>
+                                    <p><strong>Valoare:</strong> ${Number(p.value).toLocaleString('ro-RO')} RON</p>
                                 </div>
                             </a>
                         `;
