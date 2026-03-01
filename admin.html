@@ -314,13 +314,15 @@
                         scope: document.getElementById('project-scope').value,
                         date: new Date().toISOString()
                     };
+                    console.log('DEBUG saving project:', JSON.stringify({id: project.id, image: project.image}));
                     await saveProject(project);
+                    console.log('DEBUG saveProject done');
                     resetForm();
                     await loadAdminProjects();
                     alert('Proiect salvat!');
                 } catch (err) {
+                    console.error('DEBUG catch error:', err);
                     alert('Eroare: ' + err.message);
-                    console.error(err);
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Salvează Proiect';
