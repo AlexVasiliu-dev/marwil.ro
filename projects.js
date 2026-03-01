@@ -94,7 +94,7 @@ async function uploadImage(file, folder) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'preset1');
-    const response = await fetch('https://api.cloudinary.com/v1_1/dvwipbit22/image/upload', {
+    const response = await fetch('https://api.cloudinary.com/v1_1/dvwpbit22/image/upload', {
         method: 'POST',
         body: formData
     });
