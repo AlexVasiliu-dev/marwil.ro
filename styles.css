@@ -847,7 +847,6 @@ body {
 
 /* GDPR Bubble Styles */
 #gdpr-bubble {
-    display: none;
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -859,6 +858,10 @@ body {
     max-width: 350px;
     z-index: 2000;
     border: 1px solid var(--sky-blue);
+    opacity: 0;
+    transform: translateY(calc(100% + 40px));
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 [data-theme="dark"] #gdpr-bubble {
@@ -866,13 +869,9 @@ body {
 }
 
 #gdpr-bubble.show {
-    display: block;
-    animation: gdprSlideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes gdprSlideIn {
-    from { transform: translateY(120%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .gdpr-content h4, 

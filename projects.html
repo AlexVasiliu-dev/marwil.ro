@@ -230,19 +230,6 @@
             }
             updateLanguage();
 
-            // GDPR Bubble Logic
-            const gdprBubble = document.getElementById('gdpr-bubble');
-            const acceptBtn = document.getElementById('accept-gdpr');
-            if (!safeGet('gdpr_accepted')) {
-                setTimeout(() => { if(gdprBubble) gdprBubble.classList.add('show'); }, 2000);
-            }
-            if(acceptBtn) {
-                acceptBtn.addEventListener('click', () => {
-                    gdprBubble.classList.remove('show');
-                    safeSet('gdpr_accepted', 'true');
-                });
-            }
-
             // --- Projects Logic ---
             const fullListContainer = document.getElementById('full-project-list');
             const featuredContainer = document.getElementById('featured-projects-container');
@@ -384,6 +371,26 @@
                 }
             });
         });
+    </script>
+
+    <!-- GDPR: isolated script, independent of Firebase/translations -->
+    <script>
+        (function() {
+            function sg(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+            function ss(k,v) { try { localStorage.setItem(k,v); } catch(e) {} }
+            document.addEventListener('DOMContentLoaded', function() {
+                var bubble = document.getElementById('gdpr-bubble');
+                var btn = document.getElementById('accept-gdpr');
+                if (!bubble) return;
+                if (!sg('gdpr_accepted')) {
+                    setTimeout(function() { bubble.classList.add('show'); }, 2000);
+                }
+                if (btn) btn.onclick = function() {
+                    bubble.classList.remove('show');
+                    ss('gdpr_accepted', 'true');
+                };
+            });
+        })();
     </script>
 </body>
 </html>
