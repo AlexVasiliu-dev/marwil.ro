@@ -827,6 +827,37 @@ body {
     color: var(--sky-blue);
 }
 
+.footer-social {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: var(--spacing-lg);
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.social-icon:hover {
+    background: var(--sky-blue);
+    transform: translateY(-3px);
+}
+
+.social-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+}
+
 .copyright {
     text-align: center;
     padding-top: var(--spacing-md);
