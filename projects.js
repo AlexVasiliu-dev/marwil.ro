@@ -58,6 +58,7 @@ function getStaticProjects() {
 async function getAdminProjects() {
     try {
         const snap = await db.ref('projects').once('value');
+        console.log('RAW projects:', JSON.stringify(snap.val()));
         if (!snap.exists()) return [];
         const arr = [];
         snap.forEach(child => arr.push(child.val()));
