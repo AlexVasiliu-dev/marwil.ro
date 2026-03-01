@@ -383,11 +383,6 @@
                 document.getElementById('submit-btn').disabled = false;
             };
 
-            if (sessionStorage.getItem('admin_logged_in') === 'true') {
-                loadAdminProjects();
-                renderBannerSlots();
-            }
-
             // --- BANNER MANAGER ---
             window.renderBannerSlots = async function() {
                 const container = document.getElementById('banner-slots');
@@ -430,6 +425,12 @@
                 await saveBannerImages(images);
                 await renderBannerSlots();
             };
+
+            // Init — called after all functions are defined
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                loadAdminProjects();
+                renderBannerSlots();
+            }
         });
     </script>
 </body>
