@@ -846,26 +846,32 @@ body {
 
 /* GDPR Bubble Styles */
 #gdpr-bubble {
+    display: none;
     position: fixed;
-    bottom: -400px;
+    bottom: 20px;
     right: 20px;
-    background-color: rgba(255, 255, 255, 0.7); /* Transparent white */
-    backdrop-filter: blur(15px); /* Modern blur effect */
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     max-width: 350px;
     z-index: 2000;
-    transition: bottom 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 1px solid var(--sky-blue);
 }
 
 [data-theme="dark"] #gdpr-bubble {
-    background-color: rgba(30, 30, 30, 0.7); /* Transparent dark */
+    background-color: rgba(30, 30, 30, 0.7);
 }
 
 #gdpr-bubble.show {
-    bottom: 20px;
+    display: block;
+    animation: gdprSlideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes gdprSlideIn {
+    from { transform: translateY(120%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .gdpr-content h4, 
