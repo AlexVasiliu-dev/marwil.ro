@@ -171,7 +171,7 @@
             <!-- Banner Image Manager -->
             <div class="banner-manager-section">
                 <h3>Imagini Banner (Pagina Principală)</h3>
-                <p>Gestionați imaginile afișate în slideshow-ul de pe pagina principală. Puteți adăuga până la 5 imagini.</p>
+                <p>Imaginile se salvează automat după upload. Dacă nu există imagini personalizate, se afișează cele implicite de mai jos.</p>
                 <div id="banner-slots" class="banner-slots-grid"></div>
             </div>
         </div>
@@ -411,17 +411,57 @@
             };
 
             // --- BANNER MANAGER ---
+            const DEFAULT_BANNERS = [
+                'screens/header%20candidate.png',
+                'screens/Sala%20sporturilor%20galati%201.png',
+                'screens/Depoul%20cfr%20galati.png'
+            ];
+
             window.renderBannerSlots = async function() {
                 const container = document.getElementById('banner-slots');
                 if (!container) return;
                 const images = await getBannerImages();
+                const hasCustom = images.filter(Boolean).length > 0;
                 container.innerHTML = '';
+
+                if (!hasCustom) {
+                    // Show defaults as read-only preview
+                    DEFAULT_BANNERS.forEach((src, i) => {
+                        const slot = document.createElement('div');
+                        slot.className = 'banner-slot filled';
+                        slot.style.cssText = 'flex-direction:column;align-items:flex-start;gap:6px;';
+                        slot.innerHTML = `
+                            <img src="${src}" style="width:100%;height:70px;object-fit:cover;border-radius:3px;">
+                            <span class="banner-filename" style="font-style:italic;color:var(--slate);">Implicit ${i+1}</span>
+                            <input type="file" id="banner-file-${i}" accept="image/*" style="display:none;" onchange="uploadBannerImage(${i}, this)">
+                            <button type="button" class="upload-btn" style="font-size:0.7rem;padding:4px 10px;width:100%;" onclick="document.getElementById('banner-file-${i}').click()">Înlocuiește</button>
+                        `;
+                        container.appendChild(slot);
+                    });
+                    // Remaining empty slots
+                    for (let i = DEFAULT_BANNERS.length; i < 5; i++) {
+                        const slot = document.createElement('div');
+                        slot.className = 'banner-slot';
+                        slot.innerHTML = `<input type="file" id="banner-file-${i}" accept="image/*" style="display:none;" onchange="uploadBannerImage(${i}, this)"><button type="button" class="upload-btn" onclick="document.getElementById('banner-file-${i}').click()">Încarcă Foto</button><span class="slot-label">Slot ${i + 1}</span>`;
+                        container.appendChild(slot);
+                    }
+                    return;
+                }
+
                 images.forEach((img, i) => {
                     const slot = document.createElement('div');
-                    slot.className = 'banner-slot' + (img ? ' filled' : '');
                     if (img) {
-                        slot.innerHTML = `<span class="banner-filename" title="${img.name}">${img.name}</span><button type="button" class="banner-remove-btn" onclick="removeBannerImage(${i})">&#x2715;</button>`;
+                        slot.className = 'banner-slot filled';
+                        slot.style.cssText = 'flex-direction:column;align-items:flex-start;gap:6px;';
+                        slot.innerHTML = `
+                            <img src="${img.src}" style="width:100%;height:70px;object-fit:cover;border-radius:3px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+                                <span class="banner-filename" title="${img.name}">${img.name}</span>
+                                <button type="button" class="banner-remove-btn" onclick="removeBannerImage(${i})">&#x2715;</button>
+                            </div>
+                        `;
                     } else {
+                        slot.className = 'banner-slot';
                         slot.innerHTML = `<input type="file" id="banner-file-${i}" accept="image/*" style="display:none;" onchange="uploadBannerImage(${i}, this)"><button type="button" class="upload-btn" onclick="document.getElementById('banner-file-${i}').click()">Încarcă Foto</button><span class="slot-label">Slot ${i + 1}</span>`;
                     }
                     container.appendChild(slot);
